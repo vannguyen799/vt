@@ -1,0 +1,17 @@
+{
+  "name": "vt",
+  "owner": {
+    "name": "vannguyen799"
+  },
+  "metadata": {
+    "description": "Cross-platform agent workflows for Git and model-aware Claude orchestration."
+  },
+  "plugins": [
+    {
+      "name": "vt",
+      "source": "./",
+      "description": "Adds /vt:commit and Claude-only model-role instructions at session start.",
+      "keywords": ["git", "commit", "workflow", "agents"]
+    }
+  ]
+}

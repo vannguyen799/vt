@@ -1,0 +1,4 @@
+interface:
+  display_name: "VT Commit"
+  short_description: "Create and push focused Git commits"
+  default_prompt: "Use $commit to organize, commit, and push my current Git changes safely."
