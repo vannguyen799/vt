@@ -12,7 +12,7 @@ The commit workflow inspects all changes, protects secrets and generated files, 
 
 ## Claude-only startup guidance
 
-Claude Code and Claude Cowork load `claude/instructions/model-roles.md` through a `SessionStart` hook. The hook adapts the active role for Fable, Opus, or Sonnet. The Codex manifest does not register this hook, so Codex and ChatGPT Work do not receive the Claude startup guidance.
+Claude Code and Claude Cowork load `claude/instructions/model-roles.md` through a `SessionStart` hook. The hook adapts the active role for Fable, Opus, or Sonnet. A `UserPromptSubmit` hook also detects commit or push intent and directs Claude to use `/vt:commit`. The Codex manifest does not register these hooks, so Codex and ChatGPT Work do not receive the Claude hook guidance.
 
 ## Install in Claude Code
 
