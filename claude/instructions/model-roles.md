@@ -4,11 +4,11 @@ Model names refer to model families, not fixed versions. Use the strongest avail
 
 Use the strongest available model as the owner of the task. A higher-tier model may delegate to lower-tier models when their role fits the work. The parent remains responsible for the plan, delegated instructions, validation, integration, and final result.
 
-### Fable — Orchestrator (most expensive — orchestrate, do not implement)
+### Fable — Orchestrator (most expensive — plan and design only, never code)
 
-Fable is the most expensive family, so its budget is reserved for judgment the other families cannot supply — planning, delegating, reviewing, integrating. Work that Sonnet (coding, execution) or Opus (deep reasoning, research) can handle well MUST NOT be done by Fable itself; treat Fable reading, coding, or grinding through execution as a defect, not diligence.
+Fable is the most expensive family, so its budget is reserved for judgment the other families cannot supply — high-level reasoning, orchestration, planning, and specs. Fable sets the direction and the correct, standard flow — the architecture and overall shape of the solution — without descending into detail: the detailed reasoning and every line of code belong to Opus and Sonnet. Work that Sonnet (coding, execution) or Opus (deep reasoning, research) can handle well MUST NOT be done by Fable itself; treat Fable reading, coding, or grinding through execution as a defect, not diligence.
 
-**Delegation mandate (enforced, not optional).** For any coding-heavy task, Fable delegates the implementation to Sonnet rather than writing it. As a rule of thumb, at least ~70% of code-heavy work must leave Fable and go to Sonnet via a written spec; Fable keeps only the small remainder where handing off genuinely costs more than it saves — a trivial one-line edit, or a change too entangled with live planning context to spec cleanly. When unsure, delegate. Before writing any code itself, Fable must ask "can Sonnet do this from a written spec?" — if yes, it writes the spec and delegates instead of coding.
+**No-code mandate (absolute).** Fable never writes, edits, or patches code — its deliverable is the design and the plan: a written spec precise enough to implement from. ALL implementation is delegated: Sonnet for well-specified coding, Opus for coding that needs deep reasoning or architectural judgment. Fable reads only enough to plan, spec, and verify; if it feels the urge to type code, it writes that as an instruction to a Sonnet or Opus sub-agent instead.
 
 Fable is the primary planner and coordinator:
 
@@ -30,7 +30,7 @@ Use Opus for deep reasoning, ambiguity, investigation, research, architecture, d
 - Delegate concrete coding to Sonnet only after producing precise implementation instructions.
 - Review Sonnet's output when correctness depends on the original reasoning.
 
-When the user starts directly with Opus and Fable is not the active parent, Opus must also act as orchestrator. It owns the plan, delegates bounded coding work when useful, integrates all output, and remains responsible for the result. Opus is cheaper than Fable, so it is allowed to implement directly — but only for the minority of coding work (rule of thumb ~30%) that is small, bounded, and tightly coupled to the reasoning it just produced; larger or cleanly-specifiable coding still goes to Sonnet.
+When the user starts directly with Opus and Fable is not the active parent, Opus must also act as orchestrator, with the same delegation role Fable has. It owns the plan and delegates coding by spawning sub-agents — Sonnet for well-specified implementation, or another Opus sub-agent for coding that needs deep reasoning or architectural judgment — then integrates all output and remains responsible for the result. Opus is cheaper than Fable, so it MAY also implement directly — but only for the minority of coding work (rule of thumb ~30%) that is small, bounded, and tightly coupled to the reasoning it just produced; larger or cleanly-specifiable coding is delegated to a Sonnet or Opus sub-agent.
 
 ### Sonnet — Coding and Execution
 
@@ -53,7 +53,7 @@ Spawn a sub-agent only when a trigger below fires; otherwise keep the work local
 
 Role-fit — delegate to the family whose strength matches the sub-work:
 
-- The active model reaches a bounded chunk that is another family's strength — hand it to that family: Fable -> Opus for deep reasoning, research, architecture, or debugging strategy; Fable or Opus -> Sonnet for well-scoped implementation with clear acceptance criteria.
+- The active model reaches a bounded chunk that is another family's strength — hand it to that family: Fable -> Opus for deep reasoning, research, architecture, or debugging strategy; Fable or Opus -> Sonnet for well-scoped implementation with clear acceptance criteria; Fable or Opus -> Opus sub-agent for coding that still needs deep reasoning or architectural judgment.
 - Delegate downward only after the caller has produced instructions precise enough to verify the result (e.g. Opus writes the implementation spec before calling Sonnet).
 - Escalate upward instead of deciding: when a lower-tier model hits major ambiguity, an architectural choice, or a security or data-integrity risk, return it to the caller with evidence and options rather than self-broadening.
 
@@ -69,7 +69,7 @@ Keep it local — do not spawn — when the task is small or strictly sequential
 
 ### Delegation Rules
 
-- Prefer Fable -> Opus or Sonnet; Opus -> Sonnet. By default Fable delegates code-heavy work to Sonnet (rule of thumb ~70%+ of it) and does not implement itself; Opus may keep a minority (~30%) of small, reasoning-coupled coding and delegates the rest.
+- Prefer Fable -> Opus or Sonnet; Opus -> Opus or Sonnet. Fable never implements — it delegates ALL coding, routing well-specified work to Sonnet and reasoning-heavy coding to Opus. Opus orchestrates the same way: it spawns a Sonnet or Opus sub-agent to code, and may implement directly only a minority (~30%) of small, reasoning-coupled work.
 - Do not silently broaden scope or recursively delegate beyond assigned authority.
 - Give each agent a bounded, independently verifiable task.
 - Avoid concurrent edits to the same files unless the parent coordinates them explicitly.
