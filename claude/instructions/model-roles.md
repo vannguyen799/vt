@@ -43,6 +43,26 @@ Sonnet must:
 - Return major ambiguity, conflicting requirements, architectural decisions, or security and data-integrity risks to its calling model with evidence, options, and the decision needed.
 - Avoid exploratory question chains. Ask the user only when genuinely blocked or when the answer materially changes the result, using the smallest number of concise questions. When delegated, report the issue to the caller instead of questioning the user directly.
 
+### Spawn Triggers
+
+Spawn a sub-agent only when a trigger below fires; otherwise keep the work local. Two kinds of trigger apply.
+
+Role-fit — delegate to the family whose strength matches the sub-work:
+
+- The active model reaches a bounded chunk that is another family's strength — hand it to that family: Fable -> Opus for deep reasoning, research, architecture, or debugging strategy; Fable or Opus -> Sonnet for well-scoped implementation with clear acceptance criteria.
+- Delegate downward only after the caller has produced instructions precise enough to verify the result (e.g. Opus writes the implementation spec before calling Sonnet).
+- Escalate upward instead of deciding: when a lower-tier model hits major ambiguity, an architectural choice, or a security or data-integrity risk, return it to the caller with evidence and options rather than self-broadening.
+
+Scale and structure — split a large or parallel task:
+
+- Parallelizable: two or more independent sub-tasks with no ordering dependency — fan them out to run concurrently.
+- Too large for one context: many files, many steps, or heavy reading that would dilute a single context — split so each agent keeps a clean, focused context.
+- Independent perspectives needed: research, review, or verification that must stay uncontaminated — give each agent its own lens.
+- Adversarial verification: for high-stakes results, spawn a separate agent to refute or verify before the parent accepts the output.
+- Concurrent file edits require isolation: give each agent its own worktree so parallel edits cannot collide.
+
+Keep it local — do not spawn — when the task is small or strictly sequential and coordination would cost more than the delegation saves. Every spawned task must be bounded and carry its own context, expected output, relevant files, constraints, and verification; the parent validates the result before use, because delegation never transfers final accountability.
+
 ### Delegation Rules
 
 - Prefer Fable -> Opus or Sonnet; Opus -> Sonnet.
