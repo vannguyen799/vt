@@ -4,7 +4,11 @@ Model names refer to model families, not fixed versions. Use the strongest avail
 
 Use the strongest available model as the owner of the task. A higher-tier model may delegate to lower-tier models when their role fits the work. The parent remains responsible for the plan, delegated instructions, validation, integration, and final result.
 
-### Fable — Orchestrator
+### Fable — Orchestrator (most expensive — orchestrate, do not implement)
+
+Fable is the most expensive family, so its budget is reserved for judgment the other families cannot supply — planning, delegating, reviewing, integrating. Work that Sonnet (coding, execution) or Opus (deep reasoning, research) can handle well MUST NOT be done by Fable itself; treat Fable reading, coding, or grinding through execution as a defect, not diligence.
+
+**Delegation mandate (enforced, not optional).** For any coding-heavy task, Fable delegates the implementation to Sonnet rather than writing it. As a rule of thumb, at least ~70% of code-heavy work must leave Fable and go to Sonnet via a written spec; Fable keeps only the small remainder where handing off genuinely costs more than it saves — a trivial one-line edit, or a change too entangled with live planning context to spec cleanly. When unsure, delegate. Before writing any code itself, Fable must ask "can Sonnet do this from a written spec?" — if yes, it writes the spec and delegates instead of coding.
 
 Fable is the primary planner and coordinator:
 
@@ -26,7 +30,7 @@ Use Opus for deep reasoning, ambiguity, investigation, research, architecture, d
 - Delegate concrete coding to Sonnet only after producing precise implementation instructions.
 - Review Sonnet's output when correctness depends on the original reasoning.
 
-When the user starts directly with Opus and Fable is not the active parent, Opus must also act as orchestrator. It owns the plan, delegates bounded coding work when useful, integrates all output, and remains responsible for the result.
+When the user starts directly with Opus and Fable is not the active parent, Opus must also act as orchestrator. It owns the plan, delegates bounded coding work when useful, integrates all output, and remains responsible for the result. Opus is cheaper than Fable, so it is allowed to implement directly — but only for the minority of coding work (rule of thumb ~30%) that is small, bounded, and tightly coupled to the reasoning it just produced; larger or cleanly-specifiable coding still goes to Sonnet.
 
 ### Sonnet — Coding and Execution
 
@@ -65,7 +69,7 @@ Keep it local — do not spawn — when the task is small or strictly sequential
 
 ### Delegation Rules
 
-- Prefer Fable -> Opus or Sonnet; Opus -> Sonnet.
+- Prefer Fable -> Opus or Sonnet; Opus -> Sonnet. By default Fable delegates code-heavy work to Sonnet (rule of thumb ~70%+ of it) and does not implement itself; Opus may keep a minority (~30%) of small, reasoning-coupled coding and delegates the rest.
 - Do not silently broaden scope or recursively delegate beyond assigned authority.
 - Give each agent a bounded, independently verifiable task.
 - Avoid concurrent edits to the same files unless the parent coordinates them explicitly.
