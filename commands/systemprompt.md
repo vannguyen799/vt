@@ -1,10 +1,15 @@
 ---
-description: Load the vt model-role orchestration policy into context and follow the role matching the active model family. Same policy the SessionStart hook injects — use when the hook did not run (e.g. Cowork) or to reload it mid-session.
+description: Load the vt model-role policy in PERFORMANCE mode — route each task to its strongest-fit model (Fable/Opus/Sonnet/Haiku) for correctness first. Same policy the SessionStart hook injects; use when the hook did not run (e.g. Cowork) or to reload it mid-session. For the cost-tightened variant use /vt:systempromptstrict.
 allowed-tools: Read
 ---
 
-Load the **vt model-role policy** for this session.
+Load the **vt model-role policy (performance profile)** for this session.
 
-Read `${CLAUDE_PLUGIN_ROOT}/claude/instructions/model-roles.md` and adopt it as the active operating policy. That file is the **single source of truth** for model roles and delegation — the same file the `vt` `SessionStart` hook injects and the `systemprompt` skill reads. Do not restate the policy from memory; read the file so this command never drifts from the hook.
+Read BOTH files and adopt them together as the active operating policy:
 
-Then identify your active model family (Fable, Opus, or Sonnet) and follow the matching role from that file. Report in one line which family and role you adopted.
+1. `${CLAUDE_PLUGIN_ROOT}/claude/instructions/model-roles.md` — the **shared core**: the Fable / Opus / Sonnet / Haiku role definitions, spawn triggers, and delegation rules.
+2. `${CLAUDE_PLUGIN_ROOT}/claude/instructions/profile-performance.md` — the **performance objective** layered on top of the core.
+
+These two files are the **single source of truth** for this command — the same core the `vt` `SessionStart` hook injects and the `systemprompt` skill reads, plus the performance profile. Do not restate the policy from memory; read both files so this command never drifts. The strict / cost-optimized variant lives in `/vt:systempromptstrict` (core + `profile-strict.md`) — do not merge the two.
+
+Then identify your active model family (Fable, Opus, Sonnet, or Haiku) and follow the matching role from the core under the performance objective. Report in one line which family and profile you adopted (e.g. "Opus — performance profile").

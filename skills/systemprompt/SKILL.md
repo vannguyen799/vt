@@ -1,10 +1,15 @@
 ---
 name: systemprompt
-description: Load the vt model-role orchestration policy (Fable/Opus/Sonnet roles + delegation rules) into context and follow the role matching the active model family. Use at the start of a session, when asked to load the vt system prompt or model roles, when invoked as vt:systemprompt, or on any Claude surface where the SessionStart hook does not run (e.g. Claude Cowork).
+description: Load the vt model-role policy in PERFORMANCE mode (Fable/Opus/Sonnet/Haiku roles + delegation, routed for correctness first) and follow the role matching the active model family. Use at the start of a session, when asked to load the vt system prompt or model roles, when invoked as vt:systemprompt, or on any Claude surface where the SessionStart hook does not run (e.g. Claude Cowork). For the cost-tightened variant use the systempromptstrict skill.
 ---
 
-# Load vt model-role policy
+# Load vt model-role policy — performance profile
 
-Read `${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/claude/instructions/model-roles.md` and adopt it as the active operating policy for this session. That file is the **single source of truth** for model roles and delegation — the same file the `vt` `SessionStart` hook injects and the Claude Code `/vt:systemprompt` command reads. If no plugin-root variable is available, locate `claude/instructions/model-roles.md` inside the `vt` plugin directory and read it. Do not restate the policy from memory; read the file so this skill never drifts from the hook.
+Read BOTH files below and adopt them together as the active operating policy for this session:
 
-Identify the active model family (Fable, Opus, or Sonnet) and follow the matching role from that file. Report in one line which family and role you adopted.
+1. `${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/claude/instructions/model-roles.md` — the **shared core**: the Fable / Opus / Sonnet / Haiku role definitions, spawn triggers, and delegation rules.
+2. `${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/claude/instructions/profile-performance.md` — the **performance objective** layered on the core.
+
+These are the **single source of truth** — the same core the `vt` `SessionStart` hook injects and the Claude Code `/vt:systemprompt` command reads. If no plugin-root variable is available, locate `claude/instructions/model-roles.md` and `claude/instructions/profile-performance.md` inside the `vt` plugin directory and read both. Do not restate the policy from memory; read the files so this skill never drifts. The strict / cost-optimized variant is the `systempromptstrict` skill (core + `profile-strict.md`) — do not merge the two.
+
+Identify the active model family (Fable, Opus, Sonnet, or Haiku) and follow the matching role from the core under the performance objective. Report in one line which family and profile you adopted (e.g. "Opus — performance profile").
