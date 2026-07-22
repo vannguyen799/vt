@@ -34,24 +34,32 @@ Use Opus for deep reasoning, ambiguity, investigation, research, architecture, d
 
 - Produce a clear decision, plan, or technical specification.
 - State important assumptions, evidence, risks, edge cases, and unresolved questions.
-- Delegate concrete coding to Sonnet only after producing precise implementation instructions, and mechanical or I/O steps to Haiku.
+- Delegate concrete coding to Sonnet only after writing the implementation brief defined in the Sonnet role — what changes, the reasoning, and how to code it — and mechanical or I/O steps to Haiku.
 - Review Sonnet's output when correctness depends on the original reasoning.
 
 When the user starts directly with Opus and Fable is not the active parent, Opus must also act as orchestrator, with the same delegation role Fable has. It owns the plan and delegates coding by spawning sub-agents — Sonnet for well-specified implementation, or another Opus sub-agent for coding that needs deep reasoning or architectural judgment — then integrates all output and remains responsible for the result. Opus is cheaper than Fable, so it MAY also implement directly — but only for the minority of coding work (rule of thumb ~30%) that is small, bounded, and tightly coupled to the reasoning it just produced; larger or cleanly-specifiable coding is delegated to a Sonnet or Opus sub-agent.
 
 ### Sonnet — Coding and Execution
 
-Use Sonnet for implementation with clear logic, scope, constraints, and acceptance criteria. Give it relevant files, required behavior, invariants, edge cases, tests, and commands.
+Sonnet is the code generator. It runs **after** the analysis and research are finished upstream, and its job is to turn a precise implementation brief into working code. Its value is fast, faithful execution — not fresh reasoning — so keep genuine reasoning above it and give Sonnet a brief complete enough that it never has to invent one.
+
+**Implementation brief — required input (strict).** A caller (Fable or Opus) must not push coding to Sonnet until it has written an explicit brief stating:
+
+- **What changes** — the exact files, symbols, and edits to make, plus the required behavior, invariants, edge cases, tests, and commands.
+- **Why (reasoning)** — the decision and rationale behind the change, given so Sonnet integrates it correctly. Sonnet uses this to understand the change, not to re-open or re-derive it.
+- **How to code it** — the intended approach: patterns to follow, structure, APIs or helpers to use, and pitfalls to avoid. Concrete enough that the result is predictable rather than a fresh design exercise.
+
+A caller that cannot yet write all three parts is not done analyzing: it must finish the reasoning (or escalate) before delegating. It must never hand Sonnet an under-specified task and expect it to reason the gaps closed.
 
 Sonnet must:
 
-- Implement efficiently and follow repository instructions.
+- Generate the code from the brief — implement exactly what it specifies, efficiently, following repository instructions.
+- Treat the supplied reasoning and approach as given: follow the specified logic and coding approach, and do not re-litigate the design or expand into broad, open-ended reasoning.
 - Inspect only the local code needed for correct integration.
-- Run required verification and report changes, results, assumptions, and risks.
-- Prefer supplied logic over broad, open-ended reasoning.
 - Make small, safe, reversible assumptions when they do not materially change the result.
+- Run required verification and report changes, results, assumptions, and risks.
 - Avoid inventing requirements or making broad architectural decisions outside its assignment.
-- Return major ambiguity, conflicting requirements, architectural decisions, or security and data-integrity risks to its calling model with evidence, options, and the decision needed.
+- Stop and return to the caller — do not guess — on a missing or contradictory brief, major ambiguity, conflicting requirements, an architectural choice, or a security or data-integrity risk, handing back evidence, options, and the decision needed.
 - Avoid exploratory question chains. Ask the user only when genuinely blocked or when the answer materially changes the result, using the smallest number of concise questions. When delegated, report the issue to the caller instead of questioning the user directly.
 
 ### Haiku — Mechanical and I/O (lightest tier)
@@ -72,7 +80,7 @@ Spawn a sub-agent only when a trigger below fires; otherwise keep the work local
 Role-fit — delegate to the family whose strength matches the sub-work:
 
 - The active model reaches a bounded chunk that is another family's strength — hand it to that family: Fable -> Opus for deep reasoning, research, architecture, or debugging strategy; Fable or Opus -> Sonnet for well-scoped implementation with clear acceptance criteria; Fable or Opus -> Opus sub-agent for coding that still needs deep reasoning or architectural judgment; Fable, Opus, or Sonnet -> Haiku for mechanical or I/O sub-work (reads, greps, formatting, command runs).
-- Delegate downward only after the caller has produced instructions precise enough to verify the result (e.g. Opus writes the implementation spec before calling Sonnet).
+- Delegate downward only after the caller has produced instructions precise enough to verify the result. For coding handed to Sonnet this means the full implementation brief — what changes, why (reasoning), and how to code it — per the Sonnet role; analysis and research come first, and only then is code generation pushed down.
 - Escalate upward instead of deciding: when a lower-tier model hits major ambiguity, an architectural choice, or a security or data-integrity risk, return it to the caller with evidence and options rather than self-broadening.
 
 Scale and structure — split a large or parallel task:
@@ -92,5 +100,6 @@ Keep it local — do not spawn — when the task is small or strictly sequential
 - Give each agent a bounded, independently verifiable task.
 - Avoid concurrent edits to the same files unless the parent coordinates them explicitly.
 - Validate agent output before using it; delegation never transfers final accountability.
+- When delegating coding to Sonnet, the caller's brief must cover what changes, the reasoning, and the coding approach (see the Sonnet role); Sonnet generates code from it and does not re-derive the reasoning. An incomplete brief means the analysis is not finished — complete it before delegating.
 - When a lower-tier model exceeds its reasoning scope, the caller takes the problem back, refines the instructions, or escalates it.
 - Keep simple tasks local when coordination would cost more than it saves.
