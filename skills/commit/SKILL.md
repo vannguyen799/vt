@@ -7,6 +7,15 @@ description: Analyze Git working-tree changes, organize them into focused Conven
 
 Create focused commits from the current repository and push them without mixing unrelated work or exposing secrets.
 
+## Model Delegation (Claude only)
+
+This rule applies only when this skill runs on Claude (Claude Code or Claude Cowork); it does not apply on Codex or ChatGPT Work.
+
+Sonnet is the execution tier for this workflow (see `claude/instructions/model-roles.md`). Before doing any of the steps below, check the active model:
+
+- If the active/orchestrating model is a higher tier than Sonnet (Fable or Opus), do not run the workflow yourself. Spawn a Sonnet sub-agent and delegate the entire commit workflow to it — inspection, staging, commit creation, verification, and the push — passing it this skill's instructions plus any user-specific context. Review and validate the sub-agent's result before reporting it to the user; delegation does not transfer final accountability.
+- If the active model is Sonnet or a lower tier (Sonnet, Haiku), run the workflow directly without spawning a sub-agent.
+
 ## Inspect the Repository
 
 1. Confirm that the current directory is inside a Git repository.
