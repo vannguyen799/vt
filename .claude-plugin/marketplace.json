@@ -4,13 +4,13 @@
     "name": "vannguyen799"
   },
   "metadata": {
-    "description": "Cross-platform agent workflows for Git and model-aware Claude orchestration."
+    "description": "Cross-platform workflows for Git, model-aware Claude orchestration, and Codex-assisted review and testing."
   },
   "plugins": [
     {
       "name": "vt",
       "source": "./",
-      "description": "Adds /vt:commit and Claude-only model-role instructions at session start.",
+      "description": "Adds Git workflows, Claude model roles, and an on-demand Codex review/testing role.",
       "keywords": ["git", "commit", "workflow", "agents"]
     }
   ]

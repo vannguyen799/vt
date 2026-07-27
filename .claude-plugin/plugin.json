@@ -1,7 +1,7 @@
 {
   "name": "vt",
   "version": "0.2.0",
-  "description": "Cross-platform agent workflows for safe Git commits and model-aware Claude orchestration.",
+  "description": "Cross-platform agent workflows for safe Git commits, model-aware Claude orchestration, and Codex-assisted review and testing.",
   "author": {
     "name": "vannguyen799"
   },
@@ -11,5 +11,6 @@
   "keywords": ["git", "commit", "workflow", "claude", "codex", "chatgpt"],
   "commands": "./commands/",
   "skills": "./skills/",
-  "hooks": "./claude/hooks/hooks.json"
+  "hooks": "./claude/hooks/hooks.json",
+  "mcpServers": "./.mcp.json"
 }

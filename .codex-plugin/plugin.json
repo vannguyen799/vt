@@ -1,7 +1,7 @@
 {
   "name": "vt",
-  "version": "0.1.1+codex.20260720102403",
-  "description": "Cross-platform agent workflows for safe Git commits and model-aware Claude orchestration.",
+  "version": "0.1.1+codex.20260727024101",
+  "description": "Cross-platform agent workflows for safe Git commits, model-aware Claude orchestration, and Codex-assisted review and testing.",
   "author": {
     "name": "vannguyen799",
     "url": "https://github.com/vannguyen799"
@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "VT",
     "shortDescription": "Safe commits and agent orchestration",
-    "longDescription": "VT provides a focused smart-commit workflow across Codex, ChatGPT Work, Claude Code, and Claude Cowork. Claude surfaces also receive model-role guidance at session start.",
+    "longDescription": "VT provides a focused smart-commit workflow across Codex, ChatGPT Work, Claude Code, and Claude Cowork. Claude surfaces receive model-role guidance and can load Codex as an external review and testing specialist.",
     "developerName": "vannguyen799",
     "category": "Productivity",
     "capabilities": [

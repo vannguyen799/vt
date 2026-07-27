@@ -4,7 +4,7 @@ Cross-platform agent workflows for Codex, ChatGPT Work, Claude Code, and Claude 
 
 ## Commands
 
-- Claude Code and Claude Cowork: `/vt:commit`, `/vt:systemprompt`, `/vt:systempromptstrict`
+- Claude Code and Claude Cowork: `/vt:commit`, `/vt:systemprompt`, `/vt:systempromptstrict`, `/vt:codex-model-role`
 - Codex: invoke the bundled `commit`, `systemprompt`, or `systempromptstrict` skill explicitly, or ask VT to commit and push changes
 - ChatGPT Work: select `VT` or its `commit` skill, then ask it to commit and push changes
 
@@ -25,6 +25,24 @@ Each surface loads the core **together with** one profile:
 - **Codex and ChatGPT Work** do not register the Claude hooks; use the bundled `systemprompt` or `systempromptstrict` skill to load the same core + profile.
 
 Because the hook, both commands, and both skills read `model-roles.md` for the roles rather than embedding a copy, editing that one core file updates every surface and both profiles at once; the two profile files carry only the objective that differs between them.
+
+### Codex review and testing role
+
+This role is opt-in and disabled by default. Run `/vt:codex-model-role` in Claude Code or Claude Cowork to enable it for the current conversation, or add an explicit enabling directive to an applicable `CLAUDE.md` for repository-scoped activation. Ordinary chat prompts, merely installing VT, and having its MCP tools available do not activate the role; new conversations start with normal VT routing unless an applicable `CLAUDE.md` enables it.
+
+Recommended `CLAUDE.md` directive:
+
+```md
+Enable the VT Codex model role for this repository. Prefer the
+`mcp__plugin_vt_codex__codex` agent for review, testing, and the VT commit
+workflow; use `codex-reply` for focused follow-ups. Do not override the model
+configured in Codex. Validate Codex's output, and fall back to normal VT model
+routing if the Codex MCP server is unavailable.
+```
+
+Once enabled, Codex acts as an external specialist for code review, test planning and execution, coverage gaps, regression checks, and independent verification. VT starts `codex mcp-server` from its bundled `.mcp.json`, giving Claude the `codex` and `codex-reply` MCP tools. Claude Code's built-in `Agent` tool cannot switch to a Codex provider; the MCP server is the provider bridge. Non-interactive `codex review` and `codex exec` remain fallbacks when MCP is unavailable.
+
+VT deliberately does not send the MCP `model` override or CLI `--model`. Codex uses the concrete model and profile already selected in the user's Codex configuration. Claude scopes the task, invokes Codex, validates its evidence, and integrates the result. While this role is active, `/vt:commit` also prefers the Codex MCP agent over the normal Sonnet delegation path; Sonnet remains the fallback if MCP is unavailable.
 
 ## Install in Claude Code
 

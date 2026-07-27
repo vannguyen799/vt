@@ -11,6 +11,8 @@ Create focused commits from the current repository and push them without mixing 
 
 This rule applies only when this skill runs on Claude (Claude Code or Claude Cowork); it does not apply on Codex or ChatGPT Work.
 
+Only if the VT Codex model role was activated by `/vt:codex-model-role` in the current conversation or by an explicit directive in an applicable `CLAUDE.md` does its **Commit workflow override** take precedence: delegate this entire workflow to the plugin's Codex MCP agent rather than Sonnet. An ordinary chat prompt or MCP availability alone is not activation, and command activation from a previous conversation does not carry over. Pass this skill's complete instructions and the user's request, do not override the user's configured Codex model, and validate the resulting Git state. If Codex MCP is unavailable or fails, fall back to the normal rules below. Never run Codex and Sonnet concurrently against the same Git index or working tree.
+
 Sonnet is the execution tier for this workflow (see `claude/instructions/model-roles.md`). Before doing any of the steps below, check the active model:
 
 - If the active/orchestrating model is a higher tier than Sonnet (Fable or Opus), do not run the workflow yourself. Spawn a Sonnet sub-agent and delegate the entire commit workflow to it — inspection, staging, commit creation, verification, and the push — passing it this skill's instructions plus any user-specific context. Review and validate the sub-agent's result before reporting it to the user; delegation does not transfer final accountability.
