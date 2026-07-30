@@ -1,0 +1,51 @@
+name: Auto bump patch version
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".claude-plugin/**"
+      - ".codex-plugin/**"
+      - ".mcp.json"
+      - "claude/**"
+      - "commands/**"
+      - "skills/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-patch-version-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the pushed revision
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Bump unchanged manifest versions
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          VERSION_MANIFESTS: >-
+            .claude-plugin/plugin.json
+            .codex-plugin/plugin.json
+        run: node .github/scripts/auto-patch-version.mjs
+
+      - name: Commit and push the bump
+        run: |
+          if git diff --quiet; then
+            echo "No automatic version bump is needed."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .claude-plugin/plugin.json .codex-plugin/plugin.json
+          git commit -m "chore: auto-bump patch version"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
