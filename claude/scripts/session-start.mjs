@@ -20,12 +20,14 @@ const instructionsDir = join(pluginRoot, "claude", "instructions");
 
 // The SessionStart hook injects the default (performance) profile: the shared
 // core (Fable/Opus/Sonnet/Haiku roles + delegation) plus the performance
-// objective. This mirrors `/vt:systemprompt`. The strict / cost-optimized
-// variant (core + profile-strict.md) is opt-in via `/vt:systempromptstrict`.
-const [event, core, profile] = await Promise.all([
+// objective, followed by the always-on Git commit identity policy. This mirrors
+// `/vt:systemprompt`. The strict / cost-optimized variant (core +
+// profile-strict.md) is opt-in via `/vt:systempromptstrict`.
+const [event, core, profile, gitIdentity] = await Promise.all([
   readStdin(),
   readFile(join(instructionsDir, "model-roles.md"), "utf8"),
   readFile(join(instructionsDir, "profile-performance.md"), "utf8"),
+  readFile(join(instructionsDir, "git-identity.md"), "utf8"),
 ]);
 
 const model = typeof event.model === "string" ? event.model.toLowerCase() : "";
@@ -41,5 +43,5 @@ if (model.includes("haiku")) {
   activeRole = "Active model family: Fable. Follow the Fable orchestration role below.";
 }
 
-const policy = `${core.trim()}\n\n---\n\n${profile.trim()}`;
+const policy = `${core.trim()}\n\n---\n\n${profile.trim()}\n\n---\n\n${gitIdentity.trim()}`;
 process.stdout.write(`${activeRole}\n\n${policy}\n`);

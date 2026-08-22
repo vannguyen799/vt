@@ -75,6 +75,21 @@ Run focused tests, lint, type checks, or other repository-prescribed validation 
 
 Review the staged diff before every commit with `git diff --cached --check`, `git diff --cached --stat`, and `git diff --cached`. Confirm that it contains exactly one planned purpose.
 
+## Confirm the Commit Identity
+
+Commits must carry the user's own Git identity, never an identity derived from an agent's login or auth session. Before the first commit, resolve the effective identity:
+
+```bash
+git config user.email
+git config user.name
+```
+
+- Both resolve (from a global setting, or a deliberate repository-local override) and neither is an agent identity → commit with it silently. Do not ask, confirm, or mention it.
+- Either is missing → **stop and ask the user** for the name and email to use, and offer the commands to set them (`git config --global user.name "…"` / `git config --global user.email "…"`, or `--local` for a per-repository identity). Do not commit until it is configured.
+- The configured value is an agent identity — the Claude/Anthropic or Codex/OpenAI login of this session, a session-context `userEmail`, `noreply@anthropic.com`, a bot `*@users.noreply.github.com`, or similar → stop and ask as well, reporting what `git config --show-origin user.email` returns.
+
+Never set or override identity yourself unless the user explicitly asks: no `git config` writes, no `git -c user.email=…`, no `--author=…`, and no `GIT_AUTHOR_*` / `GIT_COMMITTER_*` environment variables. Never substitute the session login address for a missing configuration. See `claude/instructions/git-identity.md` for the full policy.
+
 ## Create Commits
 
 Stage only the paths or hunks for the current logical change and commit with:
@@ -83,7 +98,7 @@ Stage only the paths or hunks for the current logical change and commit with:
 <type>(<scope>): <description>
 ```
 
-The scope is optional. Use an imperative, lowercase description with no trailing period and keep the subject under 72 characters. Do not add `Co-Authored-By`, AI attribution, or signatures unless the user explicitly requests them.
+The scope is optional. Use an imperative, lowercase description with no trailing period and keep the subject under 72 characters. Do not add `Co-Authored-By`, AI attribution, or signatures unless the user explicitly requests them, and do not pass any identity flag or environment override to `git commit`; let Git resolve the author from the configuration verified above.
 
 After each commit, record its short hash, subject, and file count. Continue until every intended change is committed or explicitly skipped.
 
