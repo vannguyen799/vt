@@ -17,14 +17,26 @@ VT's model-role policy is split into a **shared core** plus two **profiles**, so
 - `claude/instructions/model-roles.md` — the **shared core (ref)**: the Fable / Opus / Sonnet / **Haiku** role definitions, spawn triggers, and delegation rules. Fable orchestrates and plans (never codes), Opus reasons and researches, Sonnet executes, Haiku handles mechanical and I/O work. This is the single source of truth for the roles; it is never loaded alone.
 - `claude/instructions/profile-performance.md` — the **performance** objective: route each task to its strongest-fit family for correctness first; when a tier might be too weak, go up.
 - `claude/instructions/profile-strict.md` — the **strict / cost** objective: same quality bar with a hard quota/token-budget discipline for subscription (Pro/Max) usage — default work down to the cheapest correct tier, keep premium contexts tiny, then verify.
+- `claude/instructions/git-identity.md` — the always-on **Git commit identity** policy, loaded next to whichever profile is active (see below).
 
-Each surface loads the core **together with** one profile:
+Each surface loads the core **together with** one profile, plus the Git identity policy:
 
-- **Claude Code** injects the core + performance profile automatically through a `SessionStart` hook, which prefixes the active role for Fable, Opus, Sonnet, or Haiku. A `UserPromptSubmit` hook also detects commit or push intent and directs Claude to use `/vt:commit`.
+- **Claude Code** injects the core + performance profile + Git identity policy automatically through a `SessionStart` hook, which prefixes the active role for Fable, Opus, Sonnet, or Haiku. A `UserPromptSubmit` hook also detects commit or push intent and directs Claude to use `/vt:commit`.
 - **Claude Cowork** runs its own harness and does **not** fire plugin hooks, so nothing is injected automatically. Load the policy on demand: `/vt:systemprompt` (core + performance) or `/vt:systempromptstrict` (core + strict). Both read the same core and apply the role for the active model family.
 - **Codex and ChatGPT Work** do not register the Claude hooks; use the bundled `systemprompt` or `systempromptstrict` skill to load the same core + profile.
 
 Because the hook, both commands, and both skills read `model-roles.md` for the roles rather than embedding a copy, editing that one core file updates every surface and both profiles at once; the two profile files carry only the objective that differs between them.
+
+### Git commit identity
+
+`claude/instructions/git-identity.md` is loaded on every surface alongside the model-role core, and the `commit` skill repeats it as a workflow step. The rule: commits carry the **user's own** Git identity, never one derived from an agent's login or auth session — not the Claude/Anthropic or Codex/OpenAI account, not the harness-provided session email, not a bot or no-reply address.
+
+Before the first commit, VT resolves `git config user.email` / `user.name`:
+
+- Configured (globally, or via a deliberate repository-local override) and not an agent identity → commit with it silently, no questions.
+- Missing, or set to an agent identity → stop and ask the user for the name and email, offering `git config --global user.name/user.email` (or `--local` for a per-repository identity).
+
+VT never writes identity configuration on its own and never passes `git -c user.email=…`, `--author=…`, or `GIT_AUTHOR_*` / `GIT_COMMITTER_*`; Git resolves the author from the verified configuration. AI-attribution trailers stay off unless the user asks for them.
 
 ### Codex review and testing role
 
