@@ -1,6 +1,6 @@
 {
   "name": "vt",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Cross-platform agent workflows for safe Git commits, model-aware Claude orchestration, and Codex-assisted review and testing.",
   "author": {
     "name": "vannguyen799"
