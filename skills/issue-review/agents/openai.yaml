@@ -1,0 +1,4 @@
+interface:
+  display_name: "VT Issue Review"
+  short_description: "Check a PR really resolves its issue"
+  default_prompt: "Use $issue-review to check whether a pull request actually resolves the issue it claims to close."

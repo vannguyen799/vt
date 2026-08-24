@@ -1,0 +1,4 @@
+interface:
+  display_name: "VT Issue Create"
+  short_description: "Turn a sentence or screenshot into a real issue"
+  default_prompt: "Use $issue-create to file an issue from what I am about to describe."

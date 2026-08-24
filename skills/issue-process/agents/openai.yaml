@@ -1,0 +1,4 @@
+interface:
+  display_name: "VT Issue Process"
+  short_description: "Take an issue from report to linked pull request"
+  default_prompt: "Use $issue-process to work through an issue and open a pull request that closes it."

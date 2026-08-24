@@ -1,0 +1,4 @@
+interface:
+  display_name: "VT Issue Triage"
+  short_description: "See what is pending and what to do next"
+  default_prompt: "Use $issue-triage to show me what is pending and what I should work on next."
