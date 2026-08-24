@@ -1,14 +1,14 @@
 {
   "name": "vt",
   "version": "0.2.1",
-  "description": "Cross-platform agent workflows for safe Git commits, model-aware Claude orchestration, and Codex-assisted review and testing.",
+  "description": "Cross-platform agent workflows across the whole Git surface — issues, branches, safe commits, and pull requests — plus model-aware Claude orchestration and Codex-assisted review.",
   "author": {
     "name": "vannguyen799"
   },
   "homepage": "https://github.com/vannguyen799/vt",
   "repository": "https://github.com/vannguyen799/vt",
   "license": "MIT",
-  "keywords": ["git", "commit", "workflow", "claude", "codex", "chatgpt"],
+  "keywords": ["git", "commit", "issue", "pull-request", "github", "gitlab", "workflow", "claude", "codex", "chatgpt"],
   "commands": "./commands/",
   "skills": "./skills/",
   "hooks": "./claude/hooks/hooks.json",

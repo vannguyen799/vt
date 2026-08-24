@@ -1,7 +1,7 @@
 {
   "name": "vt",
   "version": "0.1.2",
-  "description": "Cross-platform agent workflows for safe Git commits, model-aware Claude orchestration, and Codex-assisted review and testing.",
+  "description": "Cross-platform agent workflows across the whole Git surface — issues, branches, safe commits, and pull requests — plus model-aware Claude orchestration and Codex-assisted review.",
   "author": {
     "name": "vannguyen799",
     "url": "https://github.com/vannguyen799"
@@ -12,6 +12,10 @@
   "keywords": [
     "git",
     "commit",
+    "issue",
+    "pull-request",
+    "github",
+    "gitlab",
     "workflow",
     "codex",
     "claude",
@@ -20,8 +24,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "VT",
-    "shortDescription": "Safe commits and agent orchestration",
-    "longDescription": "VT provides a focused smart-commit workflow across Codex, ChatGPT Work, Claude Code, and Claude Cowork. Claude surfaces receive model-role guidance and can load Codex as an external review and testing specialist.",
+    "shortDescription": "Issues, commits, and pull requests",
+    "longDescription": "VT covers the whole Git surface across Codex, ChatGPT Work, Claude Code, and Claude Cowork: turning a sentence or a screenshot into a well-formed issue, triaging the backlog, taking an issue through branch, implementation, and a linked pull request, and creating focused Conventional Commits. It works with GitHub, GitLab, and Gitea by detecting the host from the Git remote. Claude surfaces receive model-role guidance and can load Codex as an external review and testing specialist.",
     "developerName": "vannguyen799",
     "category": "Productivity",
     "capabilities": [
@@ -29,7 +33,9 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Use VT Commit to organize and push my Git changes safely."
+      "Use VT Commit to organize and push my Git changes safely.",
+      "Use VT Issue Create to file an issue from what I am about to describe.",
+      "Use VT Issue Process to take an issue through to a pull request."
     ]
   }
 }

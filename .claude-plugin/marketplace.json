@@ -4,14 +4,14 @@
     "name": "vannguyen799"
   },
   "metadata": {
-    "description": "Cross-platform workflows for Git, model-aware Claude orchestration, and Codex-assisted review and testing."
+    "description": "Cross-platform agent workflows across the whole Git surface — issues, branches, safe commits, and pull requests — plus model-aware Claude orchestration and Codex-assisted review."
   },
   "plugins": [
     {
       "name": "vt",
       "source": "./",
-      "description": "Adds Git workflows, Claude model roles, and an on-demand Codex review/testing role.",
-      "keywords": ["git", "commit", "workflow", "agents"]
+      "description": "Adds issue, branch, commit, and pull-request workflows, Claude model roles, and an on-demand Codex review/testing role.",
+      "keywords": ["git", "commit", "issue", "pull-request", "workflow", "agents"]
     }
   ]
 }
