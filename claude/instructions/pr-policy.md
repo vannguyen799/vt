@@ -181,6 +181,12 @@ Closes #142
 <UI changes only, subject to A6>
 ```
 
+B9's "problem above the line, code below it" does **not** apply to a PR body. An issue is a
+report by a person about behavior; a pull request is a proposal about code, read by someone
+with the diff open. Name files, functions, and lines freely here. What does carry over is
+only the honesty rule: `Verified` holds what was really run (D1), and anything you believe
+but did not confirm goes under `Review notes`, said as such.
+
 ### D13 — Reply with a comment; formal review verdicts only when told to
 
 A pull-request review has three forms, and they are not interchangeable:

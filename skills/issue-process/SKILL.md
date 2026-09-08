@@ -37,6 +37,12 @@ Establish what "done" means before writing code. If the issue has acceptance cri
 those are the target. If it does not, state your interpretation before implementing, so a
 wrong reading costs a sentence rather than a branch.
 
+An issue written by `issue-create` has two layers (B9). Everything under **Investigation
+notes** is a hypothesis — a suspected file and line, unverified, written against whatever
+SHA was current then. Follow it first, because it is usually the fastest lead in the issue;
+never treat it as the diagnosis. The symptom and the acceptance criteria are the verified
+layer, and they are what "done" is measured against.
+
 ## Confirm the symptom before creating anything (C6)
 
 **This is the step that must not be skipped.** Without it you may spend a session fixing
@@ -49,8 +55,13 @@ Verify by whatever means the symptom allows:
 - Cannot run it? Then at minimum locate the responsible component and be able to explain
   the mechanism that produces the symptom.
 
+Confirming the symptom is what establishes the cause. Agreeing with the issue's suspected
+line is not confirmation — it is inheriting someone else's guess, and if the guess was
+wrong you will fix the wrong thing and close the issue anyway.
+
 If you cannot locate the component, **stop**. Do not create a branch, do not implement.
-Comment on the issue describing what you searched and what you would need.
+Comment on the issue describing what you searched and what you would need — the ask in the
+reporter's terms first, the paths and greps under it (B15).
 
 ## Check ownership and access before creating anything
 
@@ -167,6 +178,13 @@ Comment on the issue with the **root cause you found** — one line (B15). The f
 cross-reference tells the reporter that a PR exists; it never tells them what was actually
 wrong, which is the part they are waiting for. Do not comment merely to announce the PR
 (D7), and do not post progress updates that carry no new information.
+
+Write that line for the reporter, not for the reviewer: say what the code was doing wrong
+in terms of the behavior they saw, then the anchored pointer under it. "The total was
+rounded per line instead of on the sum, so a two-item cart could come out a cent short"
+followed by "`src/checkout/total.ts:62` @ `<sha>`" — not the pointer alone, which answers
+nothing they asked. The code argument belongs in the PR body, where D12 wants it and where
+the reviewer is already looking at the diff.
 
 The same rule applies to every other state change the reporter cannot infer: could not
 reproduce, declined, duplicate, blocked, deferred, or closed — each gets a reason (B15).

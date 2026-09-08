@@ -305,6 +305,13 @@ Comment on the issue whenever its state changes in a way the reporter cannot inf
 - **Blocked or deferred** — say what it is waiting on.
 - **Closed** — carry the evidence that justified closing (C4).
 
+Every one of these lands in the reporter's inbox, so B9's split governs the comment too:
+**lead with the answer in the terms they reported it in**, and put the code under it.
+"Totals were rounded per line instead of on the sum, so a two-item cart could be a cent
+short" is the diagnosis; "`src/checkout/total.ts:62` @ `<sha>`" is the evidence for it, and
+it comes second, anchored, never instead of the sentence. A comment that is only a file
+reference tells the reporter nothing they were waiting for.
+
 Do *not* comment for: "starting work" (self-assignment is that signal), "a PR is open"
 alone (the cross-reference is that signal), or progress updates carrying no new
 information. The test is whether the comment adds something the timeline does not — the

@@ -54,7 +54,13 @@ its code, so this gate comes first.
 
 ## Check that it resolves the reported problem
 
-Start from the issue's symptom, not from the diff.
+Start from the issue's symptom, not from the diff — and not from the issue's own guess
+either. Its **Investigation notes** are unverified by construction (B9): the filer's
+hypothesis, anchored to an older SHA. A PR that changes exactly the line those notes
+named has not thereby resolved the issue; it has agreed with a guess, and the two can be
+wrong together. Judge the diff against the symptom and the acceptance criteria — the
+verified layer — and treat a matching line number as coincidence until the reproduction
+says otherwise.
 
 - **Does the change address the root cause, or the symptom?** A fix that masks the symptom
   will produce a reopened issue later.
@@ -95,6 +101,12 @@ Mechanical, but each of these silently produces a wrong outcome (see `forge.md`)
 
 Give the verdict first: does it resolve the issue, and can it be merged? Then the findings,
 most consequential first, each with `file:line` and what would go wrong.
+
+`file:line` belongs in those findings — the audience is the author with the diff open, and
+B9's restraint is about issue descriptions, not code review. But state the **verdict** in
+the reported problem's terms — "the 375px overlap is gone, the 320px case is not" — since
+that is the claim being made, and the one a non-reviewer will read. Anything posted on the
+*issue* rather than the PR follows B15 instead.
 
 Separate what is **blocking** from what is **optional**. A reviewer who marks everything
 blocking gets ignored.
