@@ -175,27 +175,55 @@ re-run and then describe it from memory, and do not discard a real stack trace i
 a paraphrase. Fresh, real context is the single biggest advantage you have over a human
 reporter.
 
-### B9 — Two zones, never mixed
+### B9 — The problem above the line, the code below it
 
-Every bug body separates what is **confirmed** from what is **inferred**. This is what lets
-B1 and B7 coexist: you are allowed to include a hypothesis, you are not allowed to present
-it as established.
+Every bug body has two layers, in this order, and they never mix.
+
+**Above the line — the problem.** Symptom, reproduction, expected versus actual, impact.
+Written so the reporter, a product owner, or a user can read it and recognise their own
+report. No `file:line`, no function names, no proposed fix. This layer answers *what is
+wrong*.
+
+**Below the line — the investigation.** Everything the repository told you, labelled as
+what it is: agent-generated, and in almost every case a hypothesis rather than a fact. This
+layer answers *how far I got*, and the person fixing it decides whether to follow you.
+
+Three things go wrong when code sits in the description itself. A `file:line` is stale
+after the next commit, while the issue lives for months. A confident line number anchors
+the fixer on your guess instead of the real cause. And code locks the reporter out of
+reading their own report.
 
 ```md
 ### Symptom
-<what was observed>
+<what was observed, in the reporter's terms>
 
-### Confirmed
-- Reproduction: <commands actually run> → <real output>
-- Error: <real message> at `src/…:47`
+### Reproduction
+<commands actually run> → <real output>
+
+### Expected vs actual
+<expected> / <actual>
+
+### Impact
+<who is affected, and how badly>
+
+---
+
+### Investigation notes — agent-generated, not verified
+- Suspected cause: `src/checkout/total.ts:62` @ `<sha>` — rounds before adding tax.
+  Not confirmed to be the only cause; the person fixing it decides.
 - Environment: <read from the machine>, branch `main` @ `<sha>`
-
-### Inferred, not verified
-- <hypothesis> at `src/…:62`. Not confirmed to be the only cause.
 
 ### Not checked
 - <what remains unknown>
 ```
+
+Two rules hold on the lower layer:
+
+- **Anchor every reference to a SHA** — `path:line @ <sha>` — so it stays traceable once
+  the line has moved.
+- **A code pointer is not a confirmed fact.** What is confirmed is the real output of a
+  real command (B1, B8). "I think the bug is here" is inference however sure you are. B11
+  names the single exception.
 
 ### B10 — Feature requests keep the user's scope
 
@@ -204,19 +232,26 @@ become "add dark mode, a theme switcher, persistence, and cross-device sync". Id
 generate go under "Open questions" for the user to decide, never into the description as
 though they had been requested.
 
+B9's split applies here too: the wish stays free of code, the research sits below it.
+
 ```md
-### Current behavior     ← verified, with file:line
-### Desired behavior     ← the user's words, unembellished
-### Affected scope       ← verified: which modules must change
+### Current behavior     ← what the product does today, in prose
+### Desired behavior     ← the user's words, unembellished, no code
 ### Open questions       ← everything you thought of
+
+---
+
+### Investigation notes — agent-generated
+- What already exists: `file:line @ <sha>`, per B14
+- Affected scope: which modules must change, and why you believe so
 ```
 
 ### B11 — Describe rather than attach
 
-For a UI bug, "the Save button is overlapped by the footer at 375px,
-`CheckoutFooter.tsx:88`" serves the person fixing it better than a screenshot, and leaks
-nothing. Attach an image only when the visual *is* the evidence — broken layout, wrong
-colour, clipped text, misalignment — and then only through A6.
+For a UI bug, "the Save button is overlapped by the footer at 375px" serves the person
+fixing it better than a screenshot, and leaks nothing. Attach an image only when the
+visual *is* the evidence — broken layout, wrong colour, clipped text, misalignment — and
+then only through A6.
 
 For a UI report, verification means **locating the component**, not running a test:
 
@@ -224,8 +259,12 @@ For a UI report, verification means **locating the component**, not running a te
 2. Grep the repository for those strings verbatim → the component.
 3. For a localized app, grep the i18n catalogue → the key → the component.
 
-That yields a real `file:line` for the "Confirmed" zone. Image dimensions only *hint* at
-viewport (they may be scaled or retina), so they belong in the "Inferred" zone.
+That mapping is B9's one exception. It is a *verified fact* — the string on the screen is
+rendered from that file — and it is the most valuable thing in the issue, so it may sit
+above the line. Write it as provenance, not as a prescription: "this label is rendered by
+`CheckoutFooter.tsx:88` @ `<sha>`", never "fix it in `CheckoutFooter.tsx:88`". Image
+dimensions only *hint* at viewport (they may be scaled or retina), so they stay below the
+line with the rest of the inference.
 
 ### B12 — Ideas become local drafts, not issues
 

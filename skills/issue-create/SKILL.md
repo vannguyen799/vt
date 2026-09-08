@@ -56,7 +56,9 @@ read from the machine — never from memory.
 
 **For a UI bug with a screenshot**: read the visible strings, grep them verbatim in the
 repository, and follow i18n keys if the app is localized, until you have a real
-`file:line`. That mapping is the most valuable thing in the issue.
+`file:line`. That mapping is the most valuable thing in the issue, and the one code
+reference B9 lets you state as fact — as provenance for what is on screen, never as a
+prescribed fix site.
 
 **For an idea**: find out what already exists. "60% of this is already in
 `useFilterState.ts:34`" is worth more than a new issue.
@@ -74,8 +76,17 @@ under "Not checked". Never invent content to fill a gap.
 ## Write the body
 
 Use the repository's template if one exists (B3). Otherwise use the structure for the input
-shape — bug (B9), feature request (B10), or idea draft (B12) — keeping the confirmed and
-inferred zones strictly separate.
+shape — bug (B9), feature request (B10), or idea draft (B12).
+
+Whichever you use, the two-layer rule holds: **the problem above the line, the code below
+it.** The description proper states the symptom, the reproduction, and the impact in terms
+the reporter would recognise — no `file:line`, no proposed fix. Everything the repository
+told you goes under "Investigation notes", anchored to a SHA and labelled agent-generated
+and unverified. The one thing that may sit above the line is the screenshot-to-component
+mapping of B11, because that is provenance rather than a guess.
+
+If the repository's template has no field for the lower layer, post the investigation notes
+as a first comment on the issue rather than forcing them into the template's fields.
 
 Title follows the Conventional vocabulary (B4). Labels come only from the existing set
 (B5, D8); if nothing fits, leave it unlabelled. Apply a disclosure label if the repository
