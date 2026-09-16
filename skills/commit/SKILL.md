@@ -15,7 +15,7 @@ Only if the VT Codex model role was activated by `/vt:codex-model-role` in the c
 
 Sonnet is the execution tier for this workflow (see `claude/instructions/model-roles.md`). Before doing any of the steps below, check the active model:
 
-- If the active/orchestrating model is a higher tier than Sonnet (Fable or Opus), do not run the workflow yourself. Spawn a Sonnet sub-agent and delegate the entire commit workflow to it — inspection, staging, commit creation, verification, and the push — passing it this skill's instructions plus any user-specific context. Review and validate the sub-agent's result before reporting it to the user; delegation does not transfer final accountability.
+- If the active/orchestrating model is a higher tier than Sonnet (Fable or Opus), do not run the workflow yourself. Call `Agent(subagent_type: "vt-implementer", ...)` and delegate the entire commit workflow to it — inspection, staging, commit creation, verification, and the push — passing it this skill's instructions plus any user-specific context in the prompt, since the sub-agent sees none of this conversation. Review and validate the sub-agent's result before reporting it to the user; delegation does not transfer final accountability.
 - If the active model is Sonnet or a lower tier (Sonnet, Haiku), run the workflow directly without spawning a sub-agent.
 
 ## Inspect the Repository

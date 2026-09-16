@@ -18,8 +18,10 @@ organization), `${CLAUDE_PLUGIN_ROOT}/claude/instructions/pr-policy.md` (branch,
 ## Model Delegation (Claude only)
 
 Applies on Claude Code and Claude Cowork only. Judging whether a change resolves a reported
-problem is reasoning work — Opus's tier. Sonnet may gather the diff, the issue text, and the
-test results; the verdict belongs to Opus or above. If the VT Codex model role is active,
+problem is reasoning work — Opus's tier. Dispatch `vt-mechanic` to gather the diff, the issue
+text, and the test results; the verdict belongs to Opus or above. When the PR is high-stakes —
+security, a migration, or a claim the rest of the plan rests on — run `vt-verifier` against the
+PR's own verification claims before accepting them. If the VT Codex model role is active,
 Codex is the preferred independent reviewer, and its findings are validated rather than
 relayed.
 

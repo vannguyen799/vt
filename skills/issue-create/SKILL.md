@@ -17,9 +17,10 @@ Read `${CLAUDE_PLUGIN_ROOT}/claude/instructions/issue-policy.md` (safety, conten
 Applies on Claude Code and Claude Cowork; not on Codex or ChatGPT Work.
 
 This workflow is investigation plus careful writing — Sonnet's tier. If the active model is
-Fable or Opus, delegate the whole skill to a Sonnet sub-agent with this file's instructions
-and the user's exact words, then validate what comes back before posting. If the active
-model is Sonnet or Haiku, run it directly.
+Fable or Opus, call `Agent(subagent_type: "vt-implementer", ...)` with this file's instructions
+and the user's exact words in the prompt, then validate what comes back before posting. If the
+active model is Sonnet or Haiku, run it directly — dispatching `vt-mechanic` for the repository
+lookups that fill in the report.
 
 If the VT Codex model role was activated in this conversation, prefer the Codex MCP agent
 for the investigation, then apply these rules to its findings yourself.
