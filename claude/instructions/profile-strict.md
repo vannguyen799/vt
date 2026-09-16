@@ -15,6 +15,8 @@ Usage is drawn from the pool in rough proportion to each family's price tier:
 
 One Fable answer costs roughly ten Haiku answers of the same length against the same pool. Spend premium-tier tokens only where they change the outcome.
 
+**Effort multiplies that weight.** Tier sets the per-token price; effort sets how many tokens the step burns. A `max`-effort Sonnet step can outspend an `xhigh` Opus one, so a step is only correctly priced when both dials are set — routing down a tier while leaving effort at maximum saves nothing.
+
 ### Routing — default DOWN, then verify (the inverse bias of the performance profile)
 
 - Before any tier does a step, ask: **"can a cheaper family do this correctly?"** If yes, delegate down.
@@ -29,9 +31,10 @@ One Fable answer costs roughly ten Haiku answers of the same length against the 
 - **Spec-first (vtSpec):** read only the symbols listed under a spec's `implementation:`, not the whole repo.
 - **Delegate heavy reading** to a Haiku sub-agent with its own context and take back only the conclusion — the parent's context is re-sent every turn, so keeping it small saves twice.
 - **Read once.** Never re-read the same file across turns; keep the result.
-- **Thinking budget:** reserve extended thinking for genuine reasoning (Opus); keep it low for mechanical Sonnet/Haiku work — thinking blocks count against the pool.
+- **Effort discipline (the largest lever after tier):** run each family at the core's default effort and justify every step above it. `vt-mechanic` at `low` and `vt-implementer` at `medium` exist precisely so mechanical and well-specified work stops drawing a reasoning budget it cannot use. Under this profile, **lower effort before lowering tier**: a `medium`-effort Opus answer is both cheaper and safer than an `xhigh` Haiku one on work Haiku does not own.
+- **Spend effort on verification, not repetition.** One `xhigh` refutation pass over a cheap result costs far less than re-running the production pass at a higher tier because you did not trust it.
 - **Parallel fan-out** independent sub-tasks so the work finishes inside one 5-hour session window instead of bleeding across resets.
-- **Delegation is not free.** Spawning a sub-agent duplicates tool schemas and context and adds a coordination tax — multi-agent runs can burn several times the tokens of a single context. Down-route only when the sub-work is substantial enough that a cheaper tier doing it outweighs that overhead; keep small or tightly-sequential steps local. The saving comes from the cheaper *tier*, not from spawning for its own sake.
+- **Delegation has a fixed cost and a variable saving.** Spawning duplicates tool schemas and context and adds a coordination tax, so the saving comes from the cheaper *tier and effort*, not from spawning for its own sake. In practice the overhead is repaid almost immediately for the two cases that dominate a session: heavy reading pushed to `vt-mechanic` (whose output never enters the parent's re-sent context) and specifiable coding pushed to `vt-implementer`. Delegate both by default; keep local only the genuinely small, tightly-sequential step. Note the asymmetry — an unnecessary spawn costs a coordination tax once, while unnecessary premium-tier grinding costs on every re-sent turn.
 
 ### Report
 
