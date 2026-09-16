@@ -50,6 +50,7 @@ VT's model-role policy is split into a **shared core** plus two **profiles**, so
 - `claude/instructions/profile-strict.md` — the **strict / cost** objective: same quality bar with a hard quota/token-budget discipline for subscription (Pro/Max) usage — default work down to the cheapest correct tier, keep premium contexts tiny, then verify.
 - `claude/instructions/git-identity.md` — the always-on **Git commit identity** policy, loaded next to whichever profile is active (see below).
 - `claude/instructions/forge-kernel.md` — the always-on **forge-write kernel**: three rules covering any issue, comment, label, or pull-request write, including ad-hoc `gh`/`glab`/`tea` calls made outside the `issue-*` skills.
+- `claude/instructions/delegation-mandate.md` — the **delegation mandate**: the authorization that actually lets routing happen, plus the `vt-*` sub-agent table. See *Making delegation actually fire* below — without it the policy is advisory only.
 
 Each surface loads the core **together with** one profile, plus the Git identity policy and the forge-write kernel:
 
@@ -58,6 +59,39 @@ Each surface loads the core **together with** one profile, plus the Git identity
 - **Codex and ChatGPT Work** do not register the Claude hooks; use the bundled `systemprompt` or `systempromptstrict` skill to load the same core + profile.
 
 Because the hook, both commands, and both skills read `model-roles.md` for the roles rather than embedding a copy, editing that one core file updates every surface and both profiles at once; the two profile files carry only the objective that differs between them. The same holds for the forge: `issue-policy.md` and `forge.md` are read by the `issue-*` skills rather than restated in them.
+
+### Sub-agents and effort
+
+Routing is only real if it names something callable. VT ships five sub-agents, each pinned to a model family **and** a reasoning effort, so `subagent_type` alone settles both dials:
+
+| `subagent_type` | Family / effort | Dispatch for |
+|---|---|---|
+| `vt-mechanic`         | Haiku / `low`     | reads, greps, symbol lookup, running a command, log triage |
+| `vt-implementer`      | Sonnet / `medium` | implementation from a complete brief (what / why / how) |
+| `vt-deep-implementer` | Opus / `high`     | coding whose design resolves only while it is written |
+| `vt-reasoner`         | Opus / `xhigh`    | analysis, research, architecture, debugging strategy — read-only |
+| `vt-verifier`         | Opus / `xhigh`    | adversarial verification of a high-stakes result — read-only |
+
+There is deliberately no Fable sub-agent: Fable is the orchestrator, so it is the parent in this tree, never a child of it.
+
+**Effort is the second dial.** Tier decides *who* thinks; effort decides *how hard*, on a `low` → `medium` → `high` → `xhigh` → `max` scale, and a step costs roughly `tier weight x effort`. Two rules follow, and they point in opposite directions by design:
+
+- **Raise effort before raising tier.** Thinking longer on the family that owns the work is cheaper and usually more accurate than escalating to one that does not. Escalate only when the *kind* of judgment needed is beyond the current tier — not when it merely needs longer.
+- **Lower effort before lowering tier.** A `medium`-effort Opus answer beats an `xhigh` Haiku one on work Haiku does not own. Routing down while leaving effort at maximum saves nothing.
+
+`max` effort on a rename wastes exactly as much as Fable running greps; `low` effort on an architectural call is the same defect as handing reasoning to Haiku. The per-family defaults and the full table live in `model-roles.md`.
+
+### Making delegation actually fire
+
+Claude Code's built-in default is to leave the `Agent` tool alone unless **the user, a `CLAUDE.md`, or a skill** asks for it. A `SessionStart` hook injects *context*, which does not clear that bar — so VT's roles could load correctly on every session and still produce no sub-agent calls at all. The roles describe the routing; they do not authorize it.
+
+`claude/instructions/delegation-mandate.md` is the authorization, and it has to arrive through a channel that counts. Pick one:
+
+- **User-level (recommended)** — copy the mandate into `~/.claude/CLAUDE.md`. It is written short and version-stable precisely so it can be pasted once and left alone, and it then applies to every project.
+- **Per project** — add it to the repository's `CLAUDE.md`, or `@`-import it: `@claude/instructions/delegation-mandate.md`. This repo's own `CLAUDE.md` does exactly that.
+- **Per session** — run `/vt:systemprompt` or `/vt:systempromptstrict`. Invoking the command is itself the request, so it unlocks delegation for that conversation without any file change.
+
+Two failure modes the mandate is written to block. **Resolving to delegate is not delegating** — a turn that concludes the work belongs to Sonnet and then writes the code anyway has mis-routed, because delegation is a tool call. And **a generic sub-agent inherits the parent's model** — if you fall back off the `vt-*` agents to a generic `subagent_type`, pass `model:` explicitly, or your "delegation to Sonnet" silently runs on Opus and saves nothing.
 
 ### Git commit identity
 
@@ -95,6 +129,19 @@ VT deliberately does not send the MCP `model` override or CLI `--model`. Codex u
 /plugin install vt@vt
 /reload-plugins
 ```
+
+**Then do the one step the installer cannot do for you:** add the delegation mandate to
+`~/.claude/CLAUDE.md`, or the `CLAUDE.md` of each project you want it in.
+
+```bash
+cat ~/.claude/plugins/marketplaces/vt/claude/instructions/delegation-mandate.md >> ~/.claude/CLAUDE.md
+```
+
+Without it the plugin installs cleanly, the roles load on every session, and the `Agent`
+tool still never fires — Claude Code only delegates when a user, a `CLAUDE.md`, or a skill
+asks, and a `SessionStart` hook is none of the three. If you would rather not touch a
+`CLAUDE.md`, run `/vt:systemprompt` at the start of a session instead; it unlocks
+delegation for that conversation. See *Making delegation actually fire* above.
 
 For local development:
 
