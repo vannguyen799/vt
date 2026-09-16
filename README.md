@@ -8,7 +8,7 @@ Cross-platform agent workflows for Codex, ChatGPT Work, Claude Code, and Claude 
 - Codex: invoke the bundled `commit`, `issue-*`, `systemprompt`, or `systempromptstrict` skill explicitly, or describe what you want done
 - ChatGPT Work: select `VT` or one of its skills
 
-The commit workflow inspects all changes, protects secrets and generated files, creates focused Conventional Commits, verifies each staged diff, and pushes the current branch without force-pushing.
+The commit workflow inspects all changes, protects secrets and generated files, creates focused Conventional Commits, verifies each staged diff, and pushes the current branch without force-pushing. Invoked inside a working session, it commits only the changes that session produced and reports the rest as skipped; it falls back to the whole working tree only when the session has no work of its own to attribute.
 
 ## Issue, branch, and pull-request workflows
 

@@ -28,6 +28,19 @@ Sonnet is the execution tier for this workflow (see `claude/instructions/model-r
 
 If there are no changes to commit, report that and stop. If the repository is in the middle of a merge, rebase, cherry-pick, or revert, stop and explain the state instead of creating commits.
 
+## Scope to the Current Session's Work
+
+When this skill is invoked inside a working session — a conversation that has already changed the repository by editing, creating, or deleting files, or by running a task that produced changes — commit only the changes that belong to that work. The working tree may also hold edits that predate the session or that came from another tool or agent; those are not yours to commit.
+
+1. Build the in-scope path list from the conversation itself: the files this session wrote, plus the files its own commands generated, such as formatter output, a lockfile, or a version bump.
+2. Stage those paths explicitly. Never use `git add -A`, `git add .`, or `git commit -a` in this mode.
+3. Leave every other modified or untracked path untouched and list it under skipped changes in the final report.
+4. If a file mixes session work with pre-existing edits, stage only the session's hunks with patch staging, or ask the user when the hunks cannot be separated cleanly.
+
+Fall back to the whole working tree only when the session has no work surface of its own — a fresh conversation whose first request is to commit, or a resumed session whose earlier changes cannot be attributed. State which of the two modes you are using before creating commits, and ask the user whenever the in-scope list is uncertain.
+
+When this workflow is delegated to a sub-agent or to the Codex MCP agent, pass the in-scope path list explicitly. The delegate does not see this conversation and cannot reconstruct which changes belong to it.
+
 ## Protect Sensitive and Generated Files
 
 Never stage secrets, credentials, private keys, local environment files, logs, caches, dependencies, coverage, or build output. Common exclusions include:
