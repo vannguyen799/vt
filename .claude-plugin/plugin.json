@@ -9,6 +9,7 @@
   "repository": "https://github.com/vannguyen799/vt",
   "license": "MIT",
   "keywords": ["git", "commit", "issue", "pull-request", "github", "gitlab", "workflow", "claude", "codex", "chatgpt"],
+  "agents": "./agents/",
   "commands": "./commands/",
   "skills": "./skills/",
   "hooks": "./claude/hooks/hooks.json",
