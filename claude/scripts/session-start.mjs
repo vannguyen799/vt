@@ -49,5 +49,17 @@ if (model.includes("haiku")) {
   activeRole = "Active model family: Fable. Follow the Fable orchestration role below.";
 }
 
+// A SessionStart hook injects *context*, which does not satisfy Claude Code's
+// built-in "only delegate when the user, a CLAUDE.md, or a skill asks" default.
+// The roles below therefore describe routing the Agent tool may still refuse to
+// perform. `delegation-mandate.md` is the authorization, and it has to arrive
+// through a channel that counts — a user/project CLAUDE.md, or `/vt:systemprompt`.
+// Rather than duplicate it into every turn's context, point at it once.
+const unlockNote =
+  "Delegation note: sub-agent use is authorized only when VT's delegation mandate reaches you " +
+  "through a CLAUDE.md or a skill invocation. If neither your user-level nor project CLAUDE.md " +
+  "carries it, run `/vt:systemprompt` (or add it from `claude/instructions/delegation-mandate.md`) " +
+  "before relying on the routing below — otherwise the Agent tool stays suppressed by default.";
+
 const policy = `${core.trim()}\n\n---\n\n${profile.trim()}\n\n---\n\n${gitIdentity.trim()}\n\n---\n\n${forgeKernel.trim()}`;
-process.stdout.write(`${activeRole}\n\n${policy}\n`);
+process.stdout.write(`${activeRole}\n\n${unlockNote}\n\n${policy}\n`);
