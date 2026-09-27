@@ -1,4 +1,3 @@
-import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 async function readStdin() {
@@ -17,49 +16,43 @@ const pluginRoot = process.env.CLAUDE_PLUGIN_ROOT;
 if (!pluginRoot) process.exit(0);
 
 const instructionsDir = join(pluginRoot, "claude", "instructions");
+const ref = (name) => `\`${join(instructionsDir, name)}\``;
 
-// The SessionStart hook injects the default (performance) profile: the shared
-// core (Fable/Opus/Sonnet/Haiku roles + delegation) plus the performance
-// objective, followed by the always-on Git commit identity policy and the
-// forge-write kernel. This mirrors `/vt:systemprompt`. The strict /
-// cost-optimized variant (core + profile-strict.md) is opt-in via
-// `/vt:systempromptstrict`.
-//
-// Only the three-rule forge KERNEL is always on; the full issue / branch / PR
-// policy lives in issue-policy.md and is loaded on demand by the issue-*
-// skills, so sessions that never touch the forge do not pay for it.
-const [event, core, profile, gitIdentity, forgeKernel] = await Promise.all([
-  readStdin(),
-  readFile(join(instructionsDir, "model-roles.md"), "utf8"),
-  readFile(join(instructionsDir, "profile-performance.md"), "utf8"),
-  readFile(join(instructionsDir, "git-identity.md"), "utf8"),
-  readFile(join(instructionsDir, "forge-kernel.md"), "utf8"),
-]);
+// The SessionStart hook injects a compact brief — active role, sub-agent table,
+// the triggers that fire most, and one line per always-on safety rule — and
+// points at the full files instead of inlining them. The full policy (core +
+// profile + git identity + forge kernel) costs ~12KB on every session; the
+// model reads it on demand, or the user loads it with `/vt:systemprompt`
+// (performance) or `/vt:systempromptstrict` (cost). Keep this brief in sync
+// with model-roles.md, git-identity.md, and forge-kernel.md.
+const event = await readStdin();
 
 const model = typeof event.model === "string" ? event.model.toLowerCase() : "";
 let activeRole = "Apply the role matching the active model family.";
 
 if (model.includes("haiku")) {
-  activeRole = "Active model family: Haiku. Follow the Haiku mechanical and I/O role below.";
+  activeRole = "Active model family: Haiku — mechanical and I/O role.";
 } else if (model.includes("sonnet")) {
-  activeRole = "Active model family: Sonnet. Follow the Sonnet execution role below.";
+  activeRole = "Active model family: Sonnet — coding and execution role.";
 } else if (model.includes("opus")) {
-  activeRole = "Active model family: Opus. Follow the Opus reasoning and orchestration role below.";
+  activeRole = "Active model family: Opus — reasoning, research, and fallback orchestration role.";
 } else if (model.includes("fable")) {
-  activeRole = "Active model family: Fable. Follow the Fable orchestration role below.";
+  activeRole = "Active model family: Fable — orchestrator role (plan and design only, never code).";
 }
 
-// A SessionStart hook injects *context*, which does not satisfy Claude Code's
-// built-in "only delegate when the user, a CLAUDE.md, or a skill asks" default.
-// The roles below therefore describe routing the Agent tool may still refuse to
-// perform. `delegation-mandate.md` is the authorization, and it has to arrive
-// through a channel that counts — a user/project CLAUDE.md, or `/vt:systemprompt`.
-// Rather than duplicate it into every turn's context, point at it once.
-const unlockNote =
-  "Delegation note: sub-agent use is authorized only when VT's delegation mandate reaches you " +
-  "through a CLAUDE.md or a skill invocation. If neither your user-level nor project CLAUDE.md " +
-  "carries it, run `/vt:systemprompt` (or add it from `claude/instructions/delegation-mandate.md`) " +
-  "before relying on the routing below — otherwise the Agent tool stays suppressed by default.";
+const brief = `# VT model roles (compact — full policy on demand)
 
-const policy = `${core.trim()}\n\n---\n\n${profile.trim()}\n\n---\n\n${gitIdentity.trim()}\n\n---\n\n${forgeKernel.trim()}`;
-process.stdout.write(`${activeRole}\n\n${unlockNote}\n\n${policy}\n`);
+${activeRole}
+
+- Families: Fable orchestrates/plans · Opus reasons/researches · Sonnet codes/executes · Haiku does mechanical I/O. Own work at the lowest tier that does it well; the parent stays responsible for validation and the final result.
+- Sub-agents: \`vt-mechanic\` (Haiku/low: reads, greps, commands, log triage) · \`vt-implementer\` (Sonnet/medium: code from a complete brief) · \`vt-deep-implementer\` (Opus/high: design resolves while coding) · \`vt-reasoner\` (Opus/xhigh: analysis, read-only) · \`vt-verifier\` (Opus/xhigh: adversarial verification, read-only).
+- Triggers: you can write the brief → \`vt-implementer\`; 2+ reads/greps/commands on one question → \`vt-mechanic\`; high-stakes result → \`vt-verifier\`; independent sub-tasks → fan out. Keep local only for a small 1–2 file edit inseparable from reasoning just done.
+- Full roles, effort table, and delegation rules: ${ref("model-roles.md")} + ${ref("profile-performance.md")} — read before non-trivial routing. Cost-tight variant: \`/vt:systempromptstrict\`.
+
+Always-on rules:
+- Git identity: commit only with the user's own \`git config user.name/user.email\`; never an agent/session login or no-reply address, never set identity yourself, no AI trailers unless asked; if missing → ask. Full: ${ref("git-identity.md")}
+- Forge writes (issues, comments, labels, PRs): confirm anything that reaches other people; never publish secrets; read an outside PR's diff before running it; never act as another account or edit others' words. Full: ${ref("forge-kernel.md")}
+
+Delegation is authorized only if VT's mandate reaches you through a CLAUDE.md or a skill; otherwise run \`/vt:systemprompt\` (template: ${ref("claude-md-stub.md")}).`;
+
+process.stdout.write(`${brief}\n`);
