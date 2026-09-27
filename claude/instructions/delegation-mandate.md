@@ -41,5 +41,5 @@ inseparable from the reasoning just done. "Faster to just do it myself" is not a
   and you fall back to a generic `subagent_type`, pass `model:` explicitly — otherwise
   the "delegation to Sonnet" silently runs on Opus and saves nothing.
 
-The full role definitions, effort table, and spawn triggers live in the VT policy loaded
-by the `SessionStart` hook, `/vt:systemprompt`, and `/vt:systempromptstrict`.
+The full role definitions, effort table, and spawn triggers live in `model-roles.md` —
+summarized by the `SessionStart` hook, loaded in full by `/vt:systemprompt` and `/vt:systempromptstrict`.

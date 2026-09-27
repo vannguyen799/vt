@@ -1,6 +1,6 @@
 ## VT Model-Role Profile — Performance (default)
 
-Load this **together with** `model-roles.md` (the shared core), never instead of it. The core defines the Fable / Opus / Sonnet / Haiku roles and the delegation rules; this profile sets the optimization objective for `/vt:systemprompt` and the `SessionStart` hook.
+Load this **together with** `model-roles.md` (the shared core), never instead of it. The core defines the Fable / Opus / Sonnet / Haiku roles and the delegation rules; this profile sets the optimization objective for `/vt:systemprompt` (the `SessionStart` hook links to it).
 
 ### Objective: best result first
 

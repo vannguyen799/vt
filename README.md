@@ -54,11 +54,11 @@ VT's model-role policy is split into a **shared core** plus two **profiles**, so
 
 Each surface loads the core **together with** one profile, plus the Git identity policy and the forge-write kernel:
 
-- **Claude Code** injects the core + performance profile + Git identity policy + forge kernel automatically through a `SessionStart` hook, which prefixes the active role for Fable, Opus, Sonnet, or Haiku. A `UserPromptSubmit` hook also detects commit or push intent and directs Claude to use `/vt:commit`.
+- **Claude Code** injects a compact brief (~2KB) through a `SessionStart` hook: the active role for Fable, Opus, Sonnet, or Haiku, the `vt-*` sub-agent table, the most common spawn triggers, and one line per always-on rule (Git identity, forge writes). It points at the full files (`model-roles.md`, `profile-performance.md`, `git-identity.md`, `forge-kernel.md`) instead of inlining them, so the ~12KB policy is read only when needed or loaded explicitly with `/vt:systemprompt`. A `UserPromptSubmit` hook also detects commit or push intent and directs Claude to use `/vt:commit`.
 - **Claude Cowork** runs its own harness and does **not** fire plugin hooks, so nothing is injected automatically. Load the policy on demand: `/vt:systemprompt` (core + performance) or `/vt:systempromptstrict` (core + strict). Both read the same core and apply the role for the active model family.
 - **Codex and ChatGPT Work** do not register the Claude hooks; use the bundled `systemprompt` or `systempromptstrict` skill to load the same core + profile.
 
-Because the hook, both commands, and both skills read `model-roles.md` for the roles rather than embedding a copy, editing that one core file updates every surface and both profiles at once; the two profile files carry only the objective that differs between them. The same holds for the forge: `issue-policy.md` and `forge.md` are read by the `issue-*` skills rather than restated in them.
+Because both commands and both skills read `model-roles.md` for the roles rather than embedding a copy (and the hook only summarizes it and links to it), editing that one core file updates every surface and both profiles at once; the two profile files carry only the objective that differs between them. The same holds for the forge: `issue-policy.md` and `forge.md` are read by the `issue-*` skills rather than restated in them.
 
 ### Sub-agents and effort
 
@@ -87,7 +87,7 @@ Claude Code's built-in default is to leave the `Agent` tool alone unless **the u
 
 `claude/instructions/delegation-mandate.md` is the authorization, and it has to arrive through a channel that counts. Pick one:
 
-- **User-level (recommended)** — copy the mandate into `~/.claude/CLAUDE.md`. It is written short and version-stable precisely so it can be pasted once and left alone, and it then applies to every project.
+- **User-level (recommended)** — add `claude/instructions/claude-md-stub.md` to `~/.claude/CLAUDE.md`. It is a few lines: the one-sentence authorization (which must live in `CLAUDE.md` itself) plus *detect → file* pointers, so the full mandate and policies are read only when their trigger fires. Do not `@`-import the full files there — an import inlines them into every session.
 - **Per project** — add it to the repository's `CLAUDE.md`, or `@`-import it: `@claude/instructions/delegation-mandate.md`. This repo's own `CLAUDE.md` does exactly that.
 - **Per session** — run `/vt:systemprompt` or `/vt:systempromptstrict`. Invoking the command is itself the request, so it unlocks delegation for that conversation without any file change.
 
@@ -130,12 +130,16 @@ VT deliberately does not send the MCP `model` override or CLI `--model`. Codex u
 /reload-plugins
 ```
 
-**Then do the one step the installer cannot do for you:** add the delegation mandate to
+**Then do the one step the installer cannot do for you:** add the compact delegation stub to
 `~/.claude/CLAUDE.md`, or the `CLAUDE.md` of each project you want it in.
 
 ```bash
-cat ~/.claude/plugins/marketplaces/vt/claude/instructions/delegation-mandate.md >> ~/.claude/CLAUDE.md
+cat ~/.claude/plugins/marketplaces/vt/claude/instructions/claude-md-stub.md >> ~/.claude/CLAUDE.md
 ```
+
+The stub keeps `CLAUDE.md` to *detect → reference file*: it carries only the authorization
+sentence and paths to the full mandate and policies. Other plugins (e.g. vtspec, vtmigr) can
+add their own one-line pointers in the same list.
 
 Without it the plugin installs cleanly, the roles load on every session, and the `Agent`
 tool still never fires — Claude Code only delegates when a user, a `CLAUDE.md`, or a skill

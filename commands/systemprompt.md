@@ -1,5 +1,5 @@
 ---
-description: Load the vt model-role policy in PERFORMANCE mode — route each task to its strongest-fit model (Fable/Opus/Sonnet/Haiku) for correctness first. Same policy the SessionStart hook injects; use when the hook did not run (e.g. Cowork) or to reload it mid-session. For the cost-tightened variant use /vt:systempromptstrict.
+description: Load the vt model-role policy in PERFORMANCE mode — route each task to its strongest-fit model (Fable/Opus/Sonnet/Haiku) for correctness first. Full version of the policy the SessionStart hook summarizes; use when the hook did not run (e.g. Cowork) or to reload it mid-session. For the cost-tightened variant use /vt:systempromptstrict.
 allowed-tools: Read
 ---
 
@@ -13,6 +13,6 @@ Read ALL FIVE files and adopt them together as the active operating policy:
 4. `${CLAUDE_PLUGIN_ROOT}/claude/instructions/forge-kernel.md` — the always-on **forge-write kernel**: confirm before any issue/PR write, never publish secrets, never act as another account. The full issue/branch/PR policy is not loaded here; the `issue-*` skills load it on demand.
 5. `${CLAUDE_PLUGIN_ROOT}/claude/instructions/delegation-mandate.md` — the **delegation mandate**: explicit authorization to use the `Agent` tool, the five `vt-*` sub-agents with their pinned family and effort, and the two triggers that fire most often. Invoking this command is itself the request that unlocks delegation for the session — without it, the `Agent` tool stays suppressed by Claude Code's built-in default no matter what the roles say.
 
-These five files are the **single source of truth** for this command — the same core the `vt` `SessionStart` hook injects and the `systemprompt` skill reads, plus the performance profile. Do not restate the policy from memory; read all five files so this command never drifts. The strict / cost-optimized variant lives in `/vt:systempromptstrict` (core + `profile-strict.md`) — do not merge the two.
+These five files are the **single source of truth** for this command — the full core the `vt` `SessionStart` hook summarizes and the `systemprompt` skill reads, plus the performance profile. Do not restate the policy from memory; read all five files so this command never drifts. The strict / cost-optimized variant lives in `/vt:systempromptstrict` (core + `profile-strict.md`) — do not merge the two.
 
 Then identify your active model family (Fable, Opus, Sonnet, or Haiku) and follow the matching role from the core under the performance objective. Report in one line which family and profile you adopted (e.g. "Opus — performance profile").
