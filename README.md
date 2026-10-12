@@ -4,8 +4,8 @@ Cross-platform agent workflows for Codex, ChatGPT Work, Claude Code, and Claude 
 
 ## Commands
 
-- Claude Code and Claude Cowork: `/vt:commit`, `/vt:issue-create`, `/vt:issue-triage`, `/vt:issue-process`, `/vt:issue-review`, `/vt:systemprompt`, `/vt:systempromptstrict`, `/vt:codex-model-role`
-- Codex: invoke the bundled `commit`, `issue-*`, `systemprompt`, or `systempromptstrict` skill explicitly, or describe what you want done
+- Claude Code and Claude Cowork: `/vt:commit`, `/vt:issue-create`, `/vt:issue-triage`, `/vt:issue-process`, `/vt:issue-review`, `/vt:test`, `/vt:systemprompt`, `/vt:systempromptstrict`, `/vt:codex-model-role`
+- Codex: invoke the bundled `commit`, `issue-*`, `test`, `systemprompt`, or `systempromptstrict` skill explicitly, or describe what you want done
 - ChatGPT Work: select `VT` or one of its skills
 
 The commit workflow inspects all changes, protects secrets and generated files, creates focused Conventional Commits, verifies each staged diff, and pushes the current branch without force-pushing. Invoked inside a working session, it commits only the changes that session produced and reports the rest as skipped; it falls back to the whole working tree only when the session has no work of its own to attribute.
@@ -103,6 +103,16 @@ Before the first commit, VT resolves `git config user.email` / `user.name`:
 - Missing, or set to an agent identity → stop and ask the user for the name and email, offering `git config --global user.name/user.email` (or `--local` for a per-repository identity).
 
 VT never writes identity configuration on its own and never passes `git -c user.email=…`, `--author=…`, or `GIT_AUTHOR_*` / `GIT_COMMITTER_*`; Git resolves the author from the verified configuration. AI-attribution trailers stay off unless the user asks for them.
+
+### Test policy and the `test` runner
+
+`claude/instructions/test-policy.md` is summarized by the `SessionStart` hook and referenced by `vt-implementer`, `vt-deep-implementer`, `vt-verifier`, and `/vt:issue-process`. The rules:
+
+- **Scope every run to the change.** Run the tests the change can affect and type-check only the packages that changed; the whole suite runs once at the end of a cross-cutting change, on request, or in CI.
+- **Run proportionally.** Docs, copy, and styling need nothing; a small local edit needs a type check; a behaviour change adds the affected tests. A skipped run is reported as skipped, never as passing.
+- **Write only tests that earn their cost**: business rules with branches, pure planners and resolvers, data mapping, migrations, and a regression test per bug — not wiring, thin controllers, UI layout, snapshots, or mock-restating tests.
+
+`/vt:test` ships `skills/test/scripts/vt-test.sh` for JavaScript/TypeScript repositories: `changed [ref]` (vitest `--changed`, following the import graph), `files <path...>`, `typecheck` (tsc / vue-tsc for changed packages only), and `full`. It handles monorepos with several vitest configs, runs `--no-isolate` (about twice as fast) and re-runs failing files isolated so leaked state cannot fake a failure, uses half the cores, and — where `nice`, `ionice`, and `flock` exist — lowers priority and takes a machine-wide lock so parallel agents and projects queue instead of overloading a shared machine. `VT_TEST_WORKERS` pins the worker count (e.g. `2` on a small VPS).
 
 ### Codex review and testing role
 

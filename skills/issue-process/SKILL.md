@@ -130,7 +130,8 @@ Write the fix in the style of the surrounding code. Fix the root cause the inves
 identified, not the symptom.
 
 Then run the repository's own validation — focused tests for the affected area, plus lint
-and type checks where they exist. Record the exact commands and their real results; you
+and type checks where they exist, scoped and sized per
+`${CLAUDE_PLUGIN_ROOT}/claude/instructions/test-policy.md` (the `test` skill has the JS/TS runner). Record the exact commands and their real results; you
 will need them for the PR body, and inventing them there is the worst failure mode in this
 workflow (D1).
 

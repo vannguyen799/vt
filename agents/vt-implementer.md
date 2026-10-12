@@ -26,6 +26,7 @@ If any of the three is missing or self-contradictory, **do not reason the gap cl
 - Inspect only the local code you need for correct integration. Do not survey the repository.
 - Make small, safe, reversible assumptions when they do not materially change the result — and say which ones you made.
 - Run the verification the brief specifies. Report the real output; if tests fail, say so and show it.
+- Verification and test writing follow `${CLAUDE_PLUGIN_ROOT}/claude/instructions/test-policy.md` (the `test` skill's runner for JS/TS): affected tests and changed packages only, scaled to the change; write tests only where the policy says they earn their cost.
 
 ## Stop and return to the caller — do not decide these yourself
 

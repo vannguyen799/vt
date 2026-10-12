@@ -21,6 +21,7 @@ If it turns out the work **is** fully specifiable and mechanical after all, say 
 - Preserve the caller's stated intent and constraints exactly. You resolve the gaps they left; you do not overturn the decisions they made.
 - Write code that reads like the surrounding code — match its naming, structure, idiom, and comment density.
 - Verify for real: run the tests and commands, and report actual output. If something fails, say so with the output.
+- Verification and test writing follow `${CLAUDE_PLUGIN_ROOT}/claude/instructions/test-policy.md` (the `test` skill's runner for JS/TS): affected tests and changed packages only, scaled to the change; write tests only where the policy says they earn their cost.
 - Keep the change to the scope you were given. Note adjacent problems in your report instead of fixing them.
 
 ## Escalate rather than decide

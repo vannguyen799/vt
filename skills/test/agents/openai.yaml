@@ -1,0 +1,4 @@
+interface:
+  display_name: "VT Test"
+  short_description: "Run only the tests and type checks a change can affect"
+  default_prompt: "Use $test to verify my current changes with the affected tests only."

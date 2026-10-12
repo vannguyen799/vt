@@ -24,7 +24,7 @@ const ref = (name) => `\`${join(instructionsDir, name)}\``;
 // profile + git identity + forge kernel) costs ~12KB on every session; the
 // model reads it on demand, or the user loads it with `/vt:systemprompt`
 // (performance) or `/vt:systempromptstrict` (cost). Keep this brief in sync
-// with model-roles.md, git-identity.md, and forge-kernel.md.
+// with model-roles.md, git-identity.md, forge-kernel.md, and test-policy.md.
 const event = await readStdin();
 
 const model = typeof event.model === "string" ? event.model.toLowerCase() : "";
@@ -51,6 +51,7 @@ ${activeRole}
 
 Always-on rules:
 - Git identity: commit only with the user's own \`git config user.name/user.email\`; never an agent/session login or no-reply address, never set identity yourself, no AI trailers unless asked; if missing → ask. Full: ${ref("git-identity.md")}
+- Tests: run only what the change can affect (affected tests, changed packages' type check), scaled to the change — never the whole suite while iterating; write tests only for logic that can really break (business rules, mapping, regressions), not wiring/UI/mocks. Runner: \`/vt:test\`. Full: ${ref("test-policy.md")}
 - Forge writes (issues, comments, labels, PRs): confirm anything that reaches other people; never publish secrets; read an outside PR's diff before running it; never act as another account or edit others' words. Full: ${ref("forge-kernel.md")}
 
 Delegation is authorized only if VT's mandate reaches you through a CLAUDE.md or a skill; otherwise run \`/vt:systemprompt\` (template: ${ref("claude-md-stub.md")}).`;
