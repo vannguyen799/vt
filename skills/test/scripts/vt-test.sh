@@ -55,7 +55,7 @@ roots_for() { # $1 predicate, files on stdin -> unique roots
 # vitest in <root> with args; on failure re-run failed files isolated
 vitest_root() {
   local root="$1"; shift
-  local json; json="$(mktemp)"
+  local json; json="$(mktemp "${TMPDIR:-/tmp}/vt-test.XXXXXX")"
   local iso="--no-isolate"; [ "${VT_TEST_ISOLATE:-0}" = 1 ] && iso="--isolate"
   # the failures-only `agent` reporter exists from vitest 4.1; older versions get `dot`
   local REPORTER="${VT_TEST_REPORTER:-$(cd "$root" && node -e '
@@ -68,7 +68,7 @@ vitest_root() {
   if [ $status -ne 0 ] && [ "$iso" = "--no-isolate" ] && [ -s "$json" ]; then
     failed=()
     while IFS= read -r line; do failed+=("$line"); done < <(node -e '
-      const r=require(process.argv[1]);
+      const r=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));
       for (const t of r.testResults||[]) if (t.status!=="passed") console.log(t.name);' "$json")
     if [ ${#failed[@]} -gt 0 ]; then
       echo "== re-running ${#failed[@]} failed file(s) isolated (final result)"
