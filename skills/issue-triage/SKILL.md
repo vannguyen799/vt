@@ -14,7 +14,7 @@ Read `${CLAUDE_PLUGIN_ROOT}/claude/instructions/issue-policy.md` (safety, conten
 ## Model Delegation (Claude only)
 
 Applies on Claude Code and Claude Cowork only. This is read-heavy classification work —
-Sonnet's tier. Fable or Opus calls `Agent(subagent_type: "vt-implementer", ...)` with this
+Sonnet's tier. Fable or Opus calls `Agent(subagent_type: "vt:vt-implementer", ...)` with this
 file's instructions in the prompt and validates the result; Sonnet or Haiku runs it directly.
 Because the work is read-heavy, push the bulk gathering to `vt-mechanic` so the raw issue
 and draft text never lands in the deciding context.

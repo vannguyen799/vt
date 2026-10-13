@@ -19,7 +19,7 @@ organization), `${CLAUDE_PLUGIN_ROOT}/claude/instructions/pr-policy.md` (branch,
 ## Model Delegation (Claude only)
 
 Applies on Claude Code and Claude Cowork only. This is implementation work — Sonnet's tier.
-Fable or Opus does not run it: call `Agent(subagent_type: "vt-implementer", ...)` with this
+Fable or Opus does not run it: call `Agent(subagent_type: "vt:vt-implementer", ...)` with this
 file's instructions, the issue's full text, and the confirmed root cause in the prompt, then
 validate the diff, the tests, and the resulting PR before reporting. Use `vt-deep-implementer`
 instead when the fix's design will only resolve while writing it. Sonnet or Haiku runs it

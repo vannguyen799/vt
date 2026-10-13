@@ -98,19 +98,19 @@ Effort levels, lowest to highest: `low`, `medium`, `high`, `xhigh`, `max`.
 
 ### How to Delegate — the concrete mechanics
 
-Delegation in Claude Code is a call to the **`Agent` tool**. "Hand it to Sonnet" is not a state of mind; it is a tool call, and a turn that ends without one has not delegated. VT ships five sub-agents, each pinned to a family and a pre-tuned effort, so routing is a matter of picking the right `subagent_type`:
+Delegation in Claude Code is a call to the **`Agent` tool**. "Hand it to Sonnet" is not a state of mind; it is a tool call, and a turn that ends without one has not delegated. VT ships five sub-agents (namespaced by the plugin as `vt:<agent>`), each pinned to a family and a pre-tuned effort, so routing is a matter of picking the right `subagent_type`:
 
 | `subagent_type` | Family / effort | Use it for |
 |---|---|---|
-| `vt-mechanic`         | Haiku / `low`    | reads, greps, symbol lookup, running a command, log triage, verbatim edits |
-| `vt-implementer`      | Sonnet / `medium`| implementation from a complete brief (what / why / how) |
-| `vt-deep-implementer` | Opus / `high`    | coding that still needs reasoning as it is written |
-| `vt-reasoner`         | Opus / `xhigh`   | analysis, research, architecture, debugging strategy — read-only, returns a decision or brief |
-| `vt-verifier`         | Opus / `xhigh`   | adversarial verification of a high-stakes result — read-only |
+| `vt:vt-mechanic`         | Haiku / `low`    | reads, greps, symbol lookup, running a command, log triage, verbatim edits |
+| `vt:vt-implementer`      | Sonnet / `medium`| implementation from a complete brief (what / why / how) |
+| `vt:vt-deep-implementer` | Opus / `high`    | coding that still needs reasoning as it is written |
+| `vt:vt-reasoner`         | Opus / `xhigh`   | analysis, research, architecture, debugging strategy — read-only, returns a decision or brief |
+| `vt:vt-verifier`         | Opus / `xhigh`   | adversarial verification of a high-stakes result — read-only |
 
 ```
 Agent(
-  subagent_type: "vt-implementer",
+  subagent_type: "vt:vt-implementer",
   description:   "Add retry to the webhook client",
   prompt:        <the full brief: what changes, why, how to code it, files, verification>
 )
