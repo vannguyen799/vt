@@ -35,6 +35,7 @@ jobs:
           VERSION_MANIFESTS: >-
             .claude-plugin/plugin.json
             .codex-plugin/plugin.json
+          VERSION_SYNC_FILES: .claude-plugin/marketplace.json
         run: node .github/scripts/auto-patch-version.mjs
 
       - name: Commit and push the bump
@@ -46,6 +47,6 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .claude-plugin/plugin.json .codex-plugin/plugin.json
+          git add .claude-plugin/plugin.json .codex-plugin/plugin.json .claude-plugin/marketplace.json
           git commit -m "chore: auto-bump patch version"
           git push origin "HEAD:${GITHUB_REF_NAME}"

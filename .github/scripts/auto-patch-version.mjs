@@ -6,10 +6,10 @@ const manifests = (process.env.VERSION_MANIFESTS ?? "")
   .split(/\s+/)
   .filter(Boolean);
 
-if (!beforeSha || /^0+$/.test(beforeSha)) {
-  console.log("No previous revision is available; keeping the submitted versions.");
-  process.exit(0);
-}
+const syncFiles = (process.env.VERSION_SYNC_FILES ?? "")
+  .split(/\s+/)
+  .filter(Boolean);
+const hasPreviousRevision = Boolean(beforeSha) && !/^0+$/.test(beforeSha);
 
 if (manifests.length === 0) {
   throw new Error("VERSION_MANIFESTS must contain at least one manifest path.");
@@ -18,7 +18,11 @@ if (manifests.length === 0) {
 const versionPattern =
   /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
 
-for (const manifest of manifests) {
+if (!hasPreviousRevision) {
+  console.log("No previous revision is available; keeping the submitted versions.");
+}
+
+for (const manifest of hasPreviousRevision ? manifests : []) {
   const currentSource = readFileSync(manifest, "utf8");
   const current = JSON.parse(currentSource);
 
@@ -74,4 +78,21 @@ for (const manifest of manifests) {
     "utf8",
   );
   console.log(`${manifest}: ${current.version} -> ${nextVersion}`);
+}
+
+if (syncFiles.length > 0) {
+  const finalVersion = JSON.parse(readFileSync(manifests[0], "utf8")).version;
+  for (const file of syncFiles) {
+    const source = readFileSync(file, "utf8");
+    const synced = source.replace(
+      /("version"\s*:\s*")[^"]*(")/g,
+      `$1${finalVersion}$2`,
+    );
+    if (synced === source) {
+      console.log(`${file}: already ${finalVersion}`);
+      continue;
+    }
+    writeFileSync(file, synced, "utf8");
+    console.log(`${file}: synced to ${finalVersion}`);
+  }
 }
