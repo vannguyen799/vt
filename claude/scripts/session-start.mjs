@@ -24,7 +24,7 @@ const ref = (name) => `\`${join(instructionsDir, name)}\``;
 // profile + git identity + forge kernel) costs ~12KB on every session; the
 // model reads it on demand, or the user loads it with `/vt:systemprompt`
 // (performance) or `/vt:systempromptstrict` (cost). Keep this brief in sync
-// with model-roles.md, git-identity.md, forge-kernel.md, and test-policy.md.
+// with model-roles.md, git-identity.md, forge-kernel.md, test-policy.md, and agent-docs-policy.md.
 const event = await readStdin();
 
 const model = typeof event.model === "string" ? event.model.toLowerCase() : "";
@@ -44,15 +44,15 @@ const brief = `# VT model roles (compact — full policy on demand)
 
 ${activeRole}
 
-- Families: Fable orchestrates/plans · Opus reasons/researches · Sonnet codes/executes · Haiku does mechanical I/O. Own work at the lowest tier that does it well; the parent stays responsible for validation and the final result.
-- Sub-agents: \`vt-mechanic\` (Haiku/low: reads, greps, commands, log triage) · \`vt-implementer\` (Sonnet/medium: code from a complete brief) · \`vt-deep-implementer\` (Opus/high: design resolves while coding) · \`vt-reasoner\` (Opus/xhigh: analysis, read-only) · \`vt-verifier\` (Opus/xhigh: adversarial verification, read-only).
-- Triggers: you can write the brief → \`vt-implementer\`; 2+ reads/greps/commands on one question → \`vt-mechanic\`; high-stakes result → \`vt-verifier\`; independent sub-tasks → fan out. Keep local only for a small 1–2 file edit inseparable from reasoning just done.
-- Full roles, effort table, and delegation rules: ${ref("model-roles.md")} + ${ref("profile-performance.md")} — read before non-trivial routing. Cost-tight variant: \`/vt:systempromptstrict\`.
+- Families: Fable orchestrates/plans · Opus reasons/researches · Sonnet codes/executes · Haiku does mechanical I/O. Own work at the lowest tier that does it well; the parent validates the result.
+- Triggers: you can write the brief → \`vt-implementer\`; 2+ reads/greps/commands on one question → \`vt-mechanic\`; high-stakes result → \`vt-verifier\`; independent sub-tasks → fan out. Keep local only a small 1–2 file edit inseparable from reasoning just done.
+- Full roles and routing: ${ref("model-roles.md")} + ${ref("profile-performance.md")} — read before non-trivial routing. Cost-tight variant: \`/vt:systempromptstrict\`.
 
-Always-on rules:
-- Git identity: commit only with the user's own \`git config user.name/user.email\`; never an agent/session login or no-reply address, never set identity yourself, no AI trailers unless asked; if missing → ask. Full: ${ref("git-identity.md")}
-- Tests: run only what the change can affect (affected tests, changed packages' type check), scaled to the change — never the whole suite while iterating; write tests only for logic that can really break (business rules, mapping, regressions), not wiring/UI/mocks. Runner: \`/vt:test\`. Full: ${ref("test-policy.md")}
-- Forge writes (issues, comments, labels, PRs): confirm anything that reaches other people; never publish secrets; read an outside PR's diff before running it; never act as another account or edit others' words. Full: ${ref("forge-kernel.md")}
+Always-on rules (one line each; read the file before acting in that area):
+- Git identity: commit only as the user's own \`git config\` identity, never an agent/session one; missing → ask. ${ref("git-identity.md")}
+- Tests: run only what the change can affect, never the whole suite while iterating (\`/vt:test\`). ${ref("test-policy.md")}
+- Forge writes (issues, comments, PRs): confirm anything others will see; no secrets. ${ref("forge-kernel.md")}
+- \`CLAUDE.md\`/\`AGENTS.md\`: rules + reference index only; descriptions go to \`.claude/\`/\`.agent/\` files; never repeat another file. ${ref("agent-docs-policy.md")}
 
 Delegation is authorized only if VT's mandate reaches you through a CLAUDE.md or a skill; otherwise run \`/vt:systemprompt\` (template: ${ref("claude-md-stub.md")}).`;
 

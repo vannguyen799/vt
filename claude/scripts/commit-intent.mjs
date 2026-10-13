@@ -1,3 +1,5 @@
+import { join } from "node:path";
+
 async function readStdin() {
   let input = "";
   for await (const chunk of process.stdin) input += chunk;
@@ -9,6 +11,10 @@ async function readStdin() {
     return {};
   }
 }
+
+const identityRef = process.env.CLAUDE_PLUGIN_ROOT
+  ? join(process.env.CLAUDE_PLUGIN_ROOT, "claude", "instructions", "git-identity.md")
+  : "claude/instructions/git-identity.md";
 
 const event = await readStdin();
 const prompt = typeof event.prompt === "string" ? event.prompt : "";
@@ -43,8 +49,7 @@ process.stdout.write(
   JSON.stringify({
     hookSpecificOutput: {
       hookEventName: "UserPromptSubmit",
-      additionalContext:
-        "Commit intent detected. Use the VT commit skill (`/vt:commit`) for this request. Follow that workflow instead of improvising a separate commit process, and complete its safe push step unless the user explicitly asks for commit-only behavior. Before committing, confirm Git resolves the user's own identity (`git config user.email` / `user.name`): never author with the Claude/Codex/agent login identity or the session's context email, never set or override `user.name` / `user.email` yourself, and ask the user for a name and email if none is configured.",
+      additionalContext: `Commit intent detected. Use \`/vt:commit\` instead of improvising; it covers the safe push and the Git identity rules (${identityRef}).`,
     },
   }),
 );
