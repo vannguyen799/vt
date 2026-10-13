@@ -89,7 +89,7 @@ Claude Code's built-in default is to leave the `Agent` tool alone unless **the u
 `claude/instructions/delegation-mandate.md` is the authorization, and it has to arrive through a channel that counts. Pick one:
 
 - **User-level (recommended)** — add `claude/instructions/claude-md-stub.md` to `~/.claude/CLAUDE.md`. It is a few lines: the one-sentence authorization (which must live in `CLAUDE.md` itself) plus *detect → file* pointers, so the full mandate and policies are read only when their trigger fires. Do not `@`-import the full files there — an import inlines them into every session.
-- **Per project** — add it to the repository's `CLAUDE.md`, or `@`-import it: `@claude/instructions/delegation-mandate.md`. This repo's own `CLAUDE.md` does exactly that.
+- **Per project** — add the one-sentence authorization to the repository's `CLAUDE.md` and reference `delegation-mandate.md` by path (an `@`-import would inline it into every session). This repo's own `CLAUDE.md` does exactly that.
 - **Per session** — run `/vt:systemprompt` or `/vt:systempromptstrict`. Invoking the command is itself the request, so it unlocks delegation for that conversation without any file change.
 
 Two failure modes the mandate is written to block. **Resolving to delegate is not delegating** — a turn that concludes the work belongs to Sonnet and then writes the code anyway has mis-routed, because delegation is a tool call. And **a generic sub-agent inherits the parent's model** — if you fall back off the `vt-*` agents to a generic `subagent_type`, pass `model:` explicitly, or your "delegation to Sonnet" silently runs on Opus and saves nothing.
