@@ -21,8 +21,8 @@ multipliers to OpenAI models.
 
 | Assignment | Model when available | Effort | Return |
 |---|---|---|---|
-| Exact lookup, fixed command, mechanical extraction | `gpt-6-luna` | `low` | Evidence and concise result |
-| Bounded exploration or synthesis needing judgment | `gpt-6-luna` | `high` | Relevant paths and findings |
+| Exact lookup, fixed command, mechanical extraction | `gpt-6-luna` | `medium` | Evidence and concise result |
+| Bounded exploration or synthesis needing judgment | `gpt-6-luna` | `xhigh` | Relevant paths and findings |
 | Implementation from a complete brief | `gpt-6.1-sol` | `medium` | Changes and affected verification |
 | Implementation whose design needs resolving | `gpt-6.1-sol` | `high` | Changes, rationale, verification |
 | Ambiguous architecture or difficult debugging strategy | `gpt-6-astra` | `low` | Decision and implementation brief |

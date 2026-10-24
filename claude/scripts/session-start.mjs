@@ -53,7 +53,7 @@ ${safetyRules}`;
 if (runtime === "codex") {
   process.stdout.write(`# VT Codex routing (compact — full policy on demand)
 
-- Runtime routing: ${ref("runtime-routing.md")} — read before selecting a runtime or model; Codex roles: ${ref("codex-model-roles.md")}.
+- Runtime routing: ${ref("runtime-routing.md")} — read before selecting a runtime or model; Codex roles and effort defaults: ${ref("codex-model-roles.md")} — read before dispatching a child.
 - Preserve the user's main-session model; choose child models and reasoning effort only through the actual available tool controls and the Codex routing policy.
 
 ${safetyRules}\n`);
