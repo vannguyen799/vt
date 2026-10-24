@@ -22,6 +22,7 @@
     "chatgpt"
   ],
   "skills": "./skills/",
+  "hooks": "./codex/hooks/hooks.json",
   "interface": {
     "displayName": "VT",
     "shortDescription": "Issues, commits, and pull requests",

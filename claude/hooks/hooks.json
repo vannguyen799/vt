@@ -6,7 +6,19 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/claude/scripts/session-start.mjs\"",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/claude/scripts/session-start.mjs\" --runtime=claude",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/claude/scripts/session-start.mjs\" --runtime=claude",
             "timeout": 10
           }
         ]

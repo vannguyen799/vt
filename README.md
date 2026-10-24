@@ -43,7 +43,9 @@ The rules are split by what each workflow needs: `claude/instructions/issue-poli
 
 ## Model-role guidance
 
-VT's model-role policy is split into a **shared core** plus two **profiles**, so both variants stay in sync and only their optimization objective differs:
+VT selects model routing for the executing harness before loading a provider's roles. `claude/instructions/runtime-routing.md` is the entry point: Claude loads the core and profiles below; Codex loads `claude/instructions/codex-model-roles.md`, which has its own performance and strict objectives. The Codex reference includes dated official sources, model/effort starting points, and fallback rules for the live tool schema. These are workload heuristics awaiting benchmarks, rather than a proven optimum.
+
+Claude's model-role policy is split into a **shared core** plus two **profiles**, so both variants stay in sync and only their optimization objective differs:
 
 - `claude/instructions/model-roles.md` — the **shared core (ref)**: the Fable / Opus / Sonnet / **Haiku** role definitions, spawn triggers, and delegation rules. Fable orchestrates and plans (never codes), Opus reasons and researches, Sonnet executes, Haiku handles mechanical and I/O work. This is the single source of truth for the roles; it is never loaded alone.
 - `claude/instructions/profile-performance.md` — the **performance** objective: route each task to its strongest-fit family for correctness first; when a tier might be too weak, go up.
@@ -53,17 +55,21 @@ VT's model-role policy is split into a **shared core** plus two **profiles**, so
 - `claude/instructions/agent-docs-policy.md` — the always-on **agent-docs** rule: `CLAUDE.md` / `AGENTS.md` keep only rules and a reference index; structure, descriptions, and definitions live in `.claude/` or `.agent/` files referenced by path, with no bloat and no content repeated from other files.
 - `claude/instructions/delegation-mandate.md` — the **delegation mandate**: the authorization that actually lets routing happen, plus the `vt-*` sub-agent table. See *Making delegation actually fire* below — without it the policy is advisory only.
 
-Each surface loads the core **together with** one profile, plus the Git identity policy and the forge-write kernel:
+Each surface loads its own routing policy, plus the Git identity policy and the forge-write kernel:
 
-- **Claude Code** injects a compact brief (~1.8KB) through a `SessionStart` hook: the active role for Fable, Opus, Sonnet, or Haiku, the most common spawn triggers, and one short line plus a file path per always-on rule (Git identity, tests, forge writes, agent docs). The `vt-*` sub-agent descriptions are not repeated — Claude Code already lists them. It points at the full files (`model-roles.md`, `profile-performance.md`, `git-identity.md`, `forge-kernel.md`) instead of inlining them, so the ~12KB policy is read only when needed or loaded explicitly with `/vt:systemprompt`. A `UserPromptSubmit` hook also detects commit or push intent and points Claude at `/vt:commit` and `git-identity.md` without restating them.
+- **Claude Code** injects a compact brief through a `SessionStart` hook: the active role when the family is recognized, the most common spawn triggers, and one short line plus a file path per always-on rule (Git identity, tests, forge writes, agent docs). The `vt-*` sub-agent descriptions are not repeated — Claude Code already lists them. It points at the full files instead of inlining them, so the full policy is read only when needed or loaded explicitly with `/vt:systemprompt`. A `UserPromptSubmit` hook also detects commit or push intent and points Claude at `/vt:commit` and `git-identity.md` without restating them.
 - **Claude Cowork** runs its own harness and does **not** fire plugin hooks, so nothing is injected automatically. Load the policy on demand: `/vt:systemprompt` (core + performance) or `/vt:systempromptstrict` (core + strict). Both read the same core and apply the role for the active model family.
-- **Codex and ChatGPT Work** do not register the Claude hooks; use the bundled `systemprompt` or `systempromptstrict` skill to load the same core + profile.
+- **Codex and ChatGPT Work** register their own `SessionStart` and `SubagentStart` hooks through `.codex-plugin/plugin.json`. After the host reviews and trusts the hooks, and where Node and the scripts are available, the main thread receives Codex reference pointers and children receive a compact policy brief. If hooks are unavailable, use the bundled `systemprompt` or `systempromptstrict` skill; it selects the native Codex policy instead of Claude's model table. Installing the plugin alone does not grant hook trust.
 
-Because both commands and both skills read `model-roles.md` for the roles rather than embedding a copy (and the hook only summarizes it and links to it), editing that one core file updates every surface and both profiles at once; the two profile files carry only the objective that differs between them. The same holds for the forge: `issue-policy.md` and `forge.md` are read by the `issue-*` skills rather than restated in them.
+Commands, skills, and hooks reference the selected policy rather than embedding separate copies. The Claude profiles carry their differing objectives; native Codex objectives live in its own reference. The forge likewise uses `issue-policy.md` and `forge.md` from the `issue-*` skills.
+
+The hook command explicitly identifies its harness (`--runtime=claude` or `--runtime=codex`). Its environment fallback checks Codex's `PLUGIN_ROOT` before `CLAUDE_PLUGIN_ROOT`, since Codex supplies both. Model family detection stays separate: calling the Codex MCP specialist from Claude does not turn the parent into a Codex session.
+
+Both harnesses have separate main and child briefs. `SubagentStart` injects references and shared rules into each child, including generic agents; Claude's named `vt-*` agents also keep their own role definitions. The child brief preserves the assigned model/effort and bounded task. The parent still supplies task context and the active strict/performance objective; hook injection does not copy session history or require recursive delegation. Hook output cannot change the child's model/effort. See [Claude SubagentStart](https://code.claude.com/docs/en/hooks#subagentstart) and [Codex hooks](https://learn.chatgpt.com/docs/hooks).
 
 ### Sub-agents and effort
 
-Routing is only real if it names something callable. VT ships five sub-agents, each pinned to a model family **and** a reasoning effort, so `subagent_type` alone settles both dials:
+In Claude Code, VT ships five sub-agents, each configured with a model family **and** a reasoning effort. Codex uses its native tools and the separate reference above; these Markdown agent definitions are for Claude. Host-level overrides can still take precedence over an agent definition.
 
 | `subagent_type` | Family / effort | Dispatch for |
 |---|---|---|

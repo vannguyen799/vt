@@ -2,6 +2,7 @@
 
 - Using the `Agent` tool with `vt-*` sub-agents is explicitly authorized for this repo — delegate when a VT spawn
   trigger fires. Mandate: `claude/instructions/delegation-mandate.md`.
+- Before routing models or effort, read `claude/instructions/runtime-routing.md`; Codex delegation via `spawn_agent` is authorized under its selected policy.
 - Don't bump the plugin version: CI (`auto-patch-version.yml`) does it on every push to `main`, so `git pull --rebase`
   before pushing.
 - Changing a file in `claude/instructions/` → update its line in the SessionStart brief

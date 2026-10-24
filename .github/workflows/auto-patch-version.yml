@@ -9,6 +9,7 @@ on:
       - ".codex-plugin/**"
       - ".mcp.json"
       - "claude/**"
+      - "codex/**"
       - "commands/**"
       - "skills/**"
 
