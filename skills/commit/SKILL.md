@@ -111,7 +111,9 @@ Stage only the paths or hunks for the current logical change and commit with:
 <type>(<scope>): <description>
 ```
 
-The scope is optional. Use an imperative, lowercase description with no trailing period and keep the subject under 72 characters. Do not add `Co-Authored-By`, AI attribution, or signatures unless the user explicitly requests them, and do not pass any identity flag or environment override to `git commit`; let Git resolve the author from the configuration verified above.
+The scope is optional. Use an imperative, lowercase description with no trailing period and keep the subject under 72 characters.
+
+Never add Claude or any other AI as a co-author, or include AI attribution in commit messages. Add human `Co-Authored-By` trailers or signatures only when the user explicitly requests them. Do not pass any identity flag or environment override to `git commit`; let Git resolve the author from the configuration verified above.
 
 After each commit, record its short hash, subject, and file count. Continue until every intended change is committed or explicitly skipped.
 
