@@ -16,6 +16,32 @@ Read `${CLAUDE_PLUGIN_ROOT}/claude/instructions/issue-policy.md` (safety, conten
 organization), `${CLAUDE_PLUGIN_ROOT}/claude/instructions/pr-policy.md` (branch, worktree, pull request), and
 `${CLAUDE_PLUGIN_ROOT}/claude/instructions/forge.md` before starting.
 
+## Standing authorization under ATG
+
+When this runs in an ATG chat (the session overlay's Git policy carries an issue-workflow
+exception, and the `atg-sessions` `submit_pull_request` tool is available), the user has
+granted standing authorization for this workflow (A2), so do not stop to confirm:
+
+- creating the issue's branch `<type>/<issue>-<slug>` in a **new worktree** (always a
+  worktree under ATG — the session's own folder keeps its branch); symlink gitignored files
+  the build needs (C10) rather than asking;
+- committing through the `commit` skill and pushing that branch;
+- opening the pull request (the A1 preview below is skipped — the body still follows D12);
+- the one-line root-cause comment on the issue.
+
+Everything else in this file still applies (confirm the symptom, ownership, scope, real
+test results). The authorization never covers merging, approving, enabling `--auto`, force
+pushes, or comments that mention or assign other people.
+
+After the PR is open, call `submit_pull_request` with the PR and issue numbers. ATG — not
+you — decides whether and when it merges, from the Workspace's merge policy (off, merge
+when CI is green, or merge when done with a verifier pass) and the PR's recomputed level.
+Put `ATG-Level: L<k>` in the PR body (L0 docs/text, L1 small fix with a test, L2 anything
+larger, L3 high risk — never auto-merged). Report the policy the tool returned. If the tool
+refuses (no CI watch for the repository, issue already tracked, PR not opened by the
+CI token's account), report why and leave the
+PR for the user.
+
 ## Model Delegation (Claude only)
 
 Applies on Claude Code and Claude Cowork only. This is implementation work — Sonnet's tier.
@@ -169,9 +195,11 @@ hand-picking on your own initiative — if the user names reviewers or a team, a
 (`gh pr edit <n> --add-reviewer <org>/<team>`; on GitHub a team can be a reviewer but never
 an assignee). Never `@`-mention a person to draw attention (E3, E4).
 
-Show the full PR title and body before creating it (A1).
+Show the full PR title and body before creating it (A1) — unless the ATG standing
+authorization above applies.
 
-Do not merge, and do not approve — this workflow ends at an open pull request. If the user
+Do not merge, and do not approve — this workflow ends at an open pull request (under ATG,
+handed to `submit_pull_request`). If the user
 explicitly asks for either, they are governed by C5 and D13, and `issue-review` carries the
 preconditions to check first.
 
