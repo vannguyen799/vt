@@ -20,6 +20,7 @@ Issues and pull requests are **not Git** — Git has no concept of them. They be
 | `/vt:issue-triage` | Surveys open issues and saved idea drafts, classifies them, finds duplicates and stale threads, recommends what to do next |
 | `/vt:issue-process` | Confirms the symptom, creates a branch or worktree, implements, tests, commits through the `commit` skill, pushes, and opens a linked pull request |
 | `/vt:issue-review` | Checks whether a pull request truly resolves the issue it claims to close, and whether its verification claims are real |
+| `/vt:refactor` | Reviews a codebase or area and makes it leaner with the same behaviour: a duplication map over every file, shared utils and abstractions, dead-code removal, leaner API and stream payloads, parallel agents on disjoint areas, verified and reported with the net line delta |
 
 ### The asymmetry these workflows are built around
 

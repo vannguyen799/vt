@@ -1,0 +1,4 @@
+interface:
+  display_name: "VT Refactor"
+  short_description: "Make code smaller and simpler with the same behaviour, verified"
+  default_prompt: "Use $refactor to review this codebase and make it leaner without changing behaviour."
