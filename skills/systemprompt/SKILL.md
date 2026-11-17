@@ -19,7 +19,8 @@ Read the matching files under `<VT root>/claude/instructions/`:
 - **Unknown surface:** preserve the current model; inspect tools before choosing
   a routing policy. Do not guess a provider from a model name.
 
-On every surface, also read `git-identity.md` and `forge-kernel.md`. Read other
+On every surface, also read `change-scope-policy.md`, `git-identity.md`, and
+`forge-kernel.md`, including when hooks are unavailable. Read other
 policies when their triggers fire, as indexed by the runtime reference and hook.
 These files are the source of truth; read them rather than reconstructing them
 from memory. Keep the performance and strict objectives separate.

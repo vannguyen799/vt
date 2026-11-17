@@ -33,6 +33,7 @@ const hookEventName = event.hook_event_name ?? "SessionStart";
 if (hookEventName !== "SessionStart" && hookEventName !== "SubagentStart") process.exit(0);
 
 const safetyRules = `Always-on rules (one line each; read the file before acting in that area):
+- Change scope: fix technical errors autonomously only if business rules stay unchanged; always ask and wait before business-logic changes or when unsure. ${ref("change-scope-policy.md")}
 - Git identity: commit only as the user's own \`git config\` identity, never an agent/session one; missing → ask. ${ref("git-identity.md")}
 - Tests: run only what the change can affect, never the whole suite while iterating (\`/vt:test\`). ${ref("test-policy.md")}
 - Forge writes (issues, comments, PRs): confirm anything others will see; no secrets. ${ref("forge-kernel.md")}
